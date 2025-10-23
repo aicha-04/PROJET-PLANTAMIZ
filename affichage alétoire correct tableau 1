@@ -1,0 +1,183 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <windows.h>
+#define LIG 25
+#define COL 45
+
+
+//ss programme couleurs
+   /*
+    0 : Noir
+    1 : Bleu foncé
+    2 : Vert foncé
+    3 : Turquoise
+    4 : Rouge foncé
+    5 : Violet
+    6 : Vert caca d'oie
+    7 : Gris clair
+    8 : Gris foncé
+    9 : Bleu fluo
+    10 : Vert fluo
+    11 : Turquoise
+    12 : Rouge fluo
+    13 : Violet 2
+    14 : Jaune
+    15 : Blanc
+    */
+
+
+void Color(int couleurDuTexte,int couleurDeFond) // fonction d'affichage de couleurs
+{
+    HANDLE H=GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(H,couleurDeFond*16+couleurDuTexte);
+}
+
+
+
+int main()
+{
+    srand(time(NULL));
+    char tab[LIG][COL]={0};
+    char forme[]="SFPOM";
+    int lig=0;
+    int col=0;
+    int nb_aleatoire=0;
+
+    for(lig=0; lig<LIG; lig++)
+    {
+        for(col=0; col<COL; col++)
+
+        {
+            // 0 0
+            if(lig == 0 && col == 0 ){
+                nb_aleatoire=rand()%5; //tab[lig][col]=forme[nb_aleatoire];
+                tab[lig][col]=forme[nb_aleatoire];
+            }
+
+            // 0 1
+            if(lig == 0 && col == 1 ){
+                nb_aleatoire=rand()%5; //tab[lig][col]=forme[nb_aleatoire];
+                tab[lig][col]=forme[nb_aleatoire];
+            }
+
+
+            // 1 0
+            if(lig == 1 && col == 0){
+                nb_aleatoire=rand()%5; //tab[lig][col]=forme[nb_aleatoire];
+                tab[lig][col]=forme[nb_aleatoire];
+            }
+
+            // affichage toute ligne 0
+            if( lig ==0 && col >= 2 ){
+                do
+                {
+                    nb_aleatoire=rand()%5;
+                    tab[lig][col]=forme[nb_aleatoire];
+
+                }while(tab[lig][col]== tab[0][col-2]);
+            }
+
+            // affichage toute colonne 0
+            if(lig >= 2 && col ==0){
+                do
+                {
+                    nb_aleatoire=rand()%5;
+                    tab[lig][col]=forme[nb_aleatoire];
+
+                }while(tab[lig][col] == tab[lig-2][0]);
+            }
+
+
+                        // 1 1
+            if(lig == 1 && col == 1 ){
+                nb_aleatoire=rand()%5; //tab[lig][col]=forme[nb_aleatoire];
+                tab[lig][col]=forme[nb_aleatoire];
+            }
+
+            // 1 2
+            if(lig == 1 && col == 2 ){
+                do
+                {
+                    nb_aleatoire=rand()%5;
+                    tab[lig][col]=forme[nb_aleatoire];
+
+                }while(tab[lig][col] == tab[1][0]);
+            }
+
+
+            // 2 1
+            if(lig == 2 && col == 1){
+                do
+                {
+                    nb_aleatoire=rand()%5;
+                    tab[lig][col]=forme[nb_aleatoire];
+
+                }while(tab[lig][col] == tab[0][1]);
+            }
+
+
+            // affichage toute ligne 1
+            if( lig ==1 && col >= 2 ){
+                do
+                {
+                    nb_aleatoire=rand()%5;
+                    tab[lig][col]=forme[nb_aleatoire];
+
+                }while(tab[lig][col]== tab[1][col-2]);
+            }
+
+
+            // affichage toute colonne 1
+            if(lig >= 2 && col ==1){
+                do
+                {
+                    nb_aleatoire=rand()%5;
+                    tab[lig][col]=forme[nb_aleatoire];
+
+                }while(tab[lig][col] == tab[lig-2][1]);
+            }
+
+            //génération reste 
+            if(lig>=2 && col>=2){
+                do
+                {
+                    nb_aleatoire=rand()%5;
+                    tab[lig][col]=forme[nb_aleatoire];
+
+                }while(tab[lig][col] == tab[lig][col-2] || tab[lig][col] == tab[lig-2][col]); // Attenion il faut mettre un ou pour bien verifier et que la condition s'active 
+            }
+
+
+            if(tab[lig][col]=='S') //soleil
+            {
+                Color(14,0); //jaune
+                printf("%c", tab[lig][col]);
+            }
+            else if(tab[lig][col]=='F') //fraise
+            {
+                Color(12,0); //rouge
+                printf("%c", tab[lig][col]);
+            }
+            else if(tab[lig][col]=='P') //pomme
+            {
+                Color(6,0); //vert kaki
+                printf("%c", tab[lig][col]);
+            }
+            else if(tab[lig][col]=='O') //oignon
+            {
+                Color(5,0); //violet
+                printf("%c", tab[lig][col]);
+            }
+            else if(tab[lig][col]=='M') //mandarine
+            {
+                Color(9,0); //bleu
+                printf("%c", tab[lig][col]);
+            }
+
+        }
+        printf("\n");
+    }
+
+    return 0;
+}

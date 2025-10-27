@@ -2,181 +2,178 @@
 #include <stdlib.h>
 #include <time.h>
 #include <windows.h>
-#define LIG 25
-#define COL 45
+
+#define LIG 25 // Nombre de lignes
+#define COL 45 // Nombre de colonnes
+
+// === TABLE DES COULEURS CONSOLE ===
+// 0 : Noir
+// 1 : Bleu foncé
+// 2 : Vert foncé
+// 3 : Turquoise
+// 4 : Rouge foncé
+// 5 : Violet
+// 6 : Vert caca d'oie
+// 7 : Gris clair
+// 8 : Gris foncé
+// 9 : Bleu fluo
+// 10 : Vert fluo
+// 11 : Turquoise
+// 12 : Rouge fluo
+// 13 : Violet 2
+// 14 : Jaune
+// 15 : Blanc
 
 
-//ss programme couleurs
-   /*
-    0 : Noir
-    1 : Bleu foncé
-    2 : Vert foncé
-    3 : Turquoise
-    4 : Rouge foncé
-    5 : Violet
-    6 : Vert caca d'oie
-    7 : Gris clair
-    8 : Gris foncé
-    9 : Bleu fluo
-    10 : Vert fluo
-    11 : Turquoise
-    12 : Rouge fluo
-    13 : Violet 2
-    14 : Jaune
-    15 : Blanc
-    */
-
-
-void Color(int couleurDuTexte,int couleurDeFond) // fonction d'affichage de couleurs
+// Fonction pour changer la couleur du texte et du fond dans la console
+void Color(int couleurDuTexte,int couleurDeFond)
 {
     HANDLE H=GetStdHandle(STD_OUTPUT_HANDLE);
     SetConsoleTextAttribute(H,couleurDeFond*16+couleurDuTexte);
 }
 
-
-
 int main()
 {
-    srand(time(NULL));
-    char tab[LIG][COL]={0};
-    char forme[]="SFPOM";
-    int lig=0;
-    int col=0;
-    int nb_aleatoire=0;
+    srand(time(NULL)); // Initialisation du générateur de nombres aléatoires
 
+    char tab[LIG][COL]={0};       // Tableau principal
+    char forme[]="SFPOM";         // Ensemble des symboles possibles
+    int lig=0;                    // Indice de ligne
+    int col=0;                    // Indice de colonne
+    int nb_aleatoire=0;           // Variable pour stocker un nombre aléatoire
+
+    // === Boucle principale de création du tableau ===
     for(lig=0; lig<LIG; lig++)
     {
         for(col=0; col<COL; col++)
-
         {
-            // 0 0
+            
+            // --- Création des premiers éléments spécifiques pour initialiser le tableau ---
+
+            // Élément (0,0)
             if(lig == 0 && col == 0 ){
-                nb_aleatoire=rand()%5; //tab[lig][col]=forme[nb_aleatoire];
+                nb_aleatoire=rand()%5;
                 tab[lig][col]=forme[nb_aleatoire];
             }
 
-            // 0 1
+            // Élément (0,1)
             if(lig == 0 && col == 1 ){
-                nb_aleatoire=rand()%5; //tab[lig][col]=forme[nb_aleatoire];
+                nb_aleatoire=rand()%5;
                 tab[lig][col]=forme[nb_aleatoire];
             }
 
-
-            // 1 0
+            // Élément (1,0)
             if(lig == 1 && col == 0){
-                nb_aleatoire=rand()%5; //tab[lig][col]=forme[nb_aleatoire];
+                nb_aleatoire=rand()%5;
                 tab[lig][col]=forme[nb_aleatoire];
             }
 
-            // affichage toute ligne 0
+            // --- Ligne 0 à partir de la colonne 2 ---
+            // Empêche deux symboles identiques espacés de 2 colonnes
             if( lig ==0 && col >= 2 ){
                 do
                 {
                     nb_aleatoire=rand()%5;
                     tab[lig][col]=forme[nb_aleatoire];
-
                 }while(tab[lig][col]== tab[0][col-2]);
             }
 
-            // affichage toute colonne 0
+            // --- Colonne 0 à partir de la ligne 2 ---
+            // Empêche deux symboles identiques espacés de 2 lignes
             if(lig >= 2 && col ==0){
                 do
                 {
                     nb_aleatoire=rand()%5;
                     tab[lig][col]=forme[nb_aleatoire];
-
                 }while(tab[lig][col] == tab[lig-2][0]);
             }
 
-
-                        // 1 1
+            // Élément (1,1)
             if(lig == 1 && col == 1 ){
-                nb_aleatoire=rand()%5; //tab[lig][col]=forme[nb_aleatoire];
+                nb_aleatoire=rand()%5;
                 tab[lig][col]=forme[nb_aleatoire];
             }
 
-            // 1 2
+            // Élément (1,2)
+            // Empêche que la case soit identique à celle deux colonnes avant sur la même ligne
             if(lig == 1 && col == 2 ){
                 do
                 {
                     nb_aleatoire=rand()%5;
                     tab[lig][col]=forme[nb_aleatoire];
-
                 }while(tab[lig][col] == tab[1][0]);
             }
 
-
-            // 2 1
+            // Élément (2,1)
+            // Empêche que la case soit identique à celle deux lignes avant dans la même colonne
             if(lig == 2 && col == 1){
                 do
                 {
                     nb_aleatoire=rand()%5;
                     tab[lig][col]=forme[nb_aleatoire];
-
                 }while(tab[lig][col] == tab[0][1]);
             }
 
-
-            // affichage toute ligne 1
+            // --- Ligne 1 à partir de la colonne 2 ---
+            // Empêche répétition tous les deux symboles sur la même ligne
             if( lig ==1 && col >= 2 ){
                 do
                 {
                     nb_aleatoire=rand()%5;
                     tab[lig][col]=forme[nb_aleatoire];
-
                 }while(tab[lig][col]== tab[1][col-2]);
             }
 
-
-            // affichage toute colonne 1
+            // --- Colonne 1 à partir de la ligne 2 ---
+            // Empêche répétition tous les deux symboles dans la même colonne
             if(lig >= 2 && col ==1){
                 do
                 {
                     nb_aleatoire=rand()%5;
                     tab[lig][col]=forme[nb_aleatoire];
-
                 }while(tab[lig][col] == tab[lig-2][1]);
             }
 
-            //génération reste 
+            // --- Création du reste du tableau ---
+            // Empêche qu’un symbole soit identique à celui situé 2 cases avant sur la même ligne
+            // ou 2 cases avant sur la même colonne
             if(lig>=2 && col>=2){
                 do
                 {
                     nb_aleatoire=rand()%5;
                     tab[lig][col]=forme[nb_aleatoire];
-
-                }while(tab[lig][col] == tab[lig][col-2] || tab[lig][col] == tab[lig-2][col]); // Attenion il faut mettre un ou pour bien verifier et que la condition s'active 
+                }while(tab[lig][col] == tab[lig][col-2] || tab[lig][col] == tab[lig-2][col]);
             }
 
-
-            if(tab[lig][col]=='S') //soleil
+            // === Affichage coloré des symboles ===
+            if(tab[lig][col]=='S') // Soleil
             {
-                Color(14,0); //jaune
+                Color(14,0); // Jaune
                 printf("%c", tab[lig][col]);
             }
-            else if(tab[lig][col]=='F') //fraise
+            else if(tab[lig][col]=='F') // Fraise
             {
-                Color(12,0); //rouge
+                Color(12,0); // Rouge
                 printf("%c", tab[lig][col]);
             }
-            else if(tab[lig][col]=='P') //pomme
+            else if(tab[lig][col]=='P') // Pomme
             {
-                Color(6,0); //vert kaki
+                Color(6,0); // Vert kaki
                 printf("%c", tab[lig][col]);
             }
-            else if(tab[lig][col]=='O') //oignon
+            else if(tab[lig][col]=='O') // Oignon
             {
-                Color(5,0); //violet
+                Color(5,0); // Violet
                 printf("%c", tab[lig][col]);
             }
-            else if(tab[lig][col]=='M') //mandarine
+            else if(tab[lig][col]=='M') // Mandarine
             {
-                Color(9,0); //bleu
+                Color(9,0); // Bleu
                 printf("%c", tab[lig][col]);
             }
 
         }
-        printf("\n");
+        printf("\n"); // Retour à la ligne après chaque ligne du tableau
     }
 
     return 0;

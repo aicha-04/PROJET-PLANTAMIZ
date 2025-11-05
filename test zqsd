@@ -1,0 +1,42 @@
+#include <stdio.h>
+#include <conio.h>
+
+int main()
+
+{
+
+    char c;
+    printf("Appuie sur une touche (barre espace pour quitter) : \n");
+
+
+    while(c!=' ')
+        {
+
+
+
+        c = _getch();
+        if (c=='z')
+        {
+            printf("En haut\n");
+        }
+        if (c=='q')
+        {
+            printf("A gauche\n");
+        }
+        if (c=='d')
+        {
+            printf("A droite\n");
+        }
+        if (c=='s')
+        {
+            printf("En bas\n");
+        }
+
+
+    }
+
+
+    return 0;
+
+
+}

@@ -1,0 +1,256 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <windows.h>
+#include <conio.h> // Pour _getch()
+
+
+#define LIG 25 // Nombre de lignes
+#define COL 45 // Nombre de colonnes
+
+// === TABLE DES COULEURS CONSOLE ===
+// 0 : Noir
+// 1 : Bleu foncé
+// 2 : Vert foncé
+// 3 : Turquoise
+// 4 : Rouge foncé
+// 5 : Violet
+// 6 : Vert caca d'oie
+// 7 : Gris clair
+// 8 : Gris foncé
+// 9 : Bleu fluo
+// 10 : Vert fluo
+// 11 : Turquoise
+// 12 : Rouge fluo
+// 13 : Violet 2
+// 14 : Jaune
+// 15 : Blanc
+
+
+// Fonction pour changer la couleur du texte et du fond dans la console
+void Color(int couleurDuTexte,int couleurDeFond)
+{
+    HANDLE H=GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(H,couleurDeFond*16+couleurDuTexte);
+}
+
+void gotoligcol( int lig, int col )
+{
+ COORD mycoord;
+ mycoord.X = col;
+ mycoord.Y = lig;
+ SetConsoleCursorPosition( GetStdHandle( STD_OUTPUT_HANDLE ), mycoord );
+}
+
+// Fonction pour afficher le tableau avec surbrillance du curseur
+void afficherTableau(char tab[LIG][COL], int curseurL, int curseurC) {
+
+    int lig, col;// Déclaration des variables pour parcourir les lignes et colonnes du tableau
+
+    for(lig = 0; lig < LIG; lig++) { // Boucle sur chaque ligne du tableau (de 0 à LIG-1)
+
+        for(col = 0; col < COL; col++) { // Boucle sur chaque colonne du tableau (de 0 à COL-1)
+
+            if(lig == curseurL && col == curseurC)// Si la position actuelle correspond à celle du curseur :
+                Color(0, 15);// texte noir (0) sur fond blanc (15) pour surligner le symbole
+
+            else if(tab[lig][col]=='S') Color(14,0); // Si le symbole est 'S' (Soleil) : texte jaune (14) sur fond noir (0)
+
+            else if(tab[lig][col]=='F') Color(12,0); // Si le symbole est 'F' (Fraise) : texte rouge (12) sur fond noir (0)
+
+            else if(tab[lig][col]=='P') Color(6,0); // Si le symbole est 'P' (Pomme) : texte vert kaki (6) sur fond noir (0)
+
+            else if(tab[lig][col]=='O') Color(5,0); // Si le symbole est 'O' (Oignon) : texte violet (5) sur fond noir (0)
+
+            else if(tab[lig][col]=='M') Color(9,0); // Si le symbole est 'M' (Mandarine) : texte bleu (9) sur fond noir (0)
+
+            printf("%c", tab[lig][col]); // Affiche le symbole du tableau à la position [lig][col]
+
+            Color(7,0); // Réinitialise la couleur à gris clair (7) sur fond noir (0) pour ne pas affecter le reste du texte
+        }
+
+        printf("\n");
+        // Passe à la ligne suivante après avoir affiché toute une ligne du tableau
+    }
+}
+
+
+int main()
+{
+    srand(time(NULL)); // Initialisation du générateur de nombres aléatoires
+
+    char tab[LIG][COL]={0};       // Tableau principal
+    char forme[]="SFPOM";         // Ensemble des symboles possibles
+    int lig=0;                    // Indice de ligne
+    int col=0;                    // Indice de colonne
+    int nb_aleatoire=0;           // Variable pour stocker un nombre aléatoire
+
+    // === Boucle principale de création du tableau ===
+    for(lig=0; lig<LIG; lig++)
+    {
+        for(col=0; col<COL; col++)
+        {
+
+            // --- Création des premiers éléments spécifiques pour initialiser le tableau ---
+
+            // Élément (0,0)
+            if(lig == 0 && col == 0 ){
+                nb_aleatoire=rand()%5;
+                tab[lig][col]=forme[nb_aleatoire];
+            }
+
+            // Élément (0,1)
+            if(lig == 0 && col == 1 ){
+                nb_aleatoire=rand()%5;
+                tab[lig][col]=forme[nb_aleatoire];
+            }
+
+            // Élément (1,0)
+            if(lig == 1 && col == 0){
+                nb_aleatoire=rand()%5;
+                tab[lig][col]=forme[nb_aleatoire];
+            }
+
+            // --- Ligne 0 à partir de la colonne 2 ---
+            // Empêche deux symboles identiques espacés de 2 colonnes
+            if( lig ==0 && col >= 2 ){
+                do
+                {
+                    nb_aleatoire=rand()%5;
+                    tab[lig][col]=forme[nb_aleatoire];
+                }while(tab[lig][col]== tab[0][col-2]);
+            }
+
+            // --- Colonne 0 à partir de la ligne 2 ---
+            // Empêche deux symboles identiques espacés de 2 lignes
+            if(lig >= 2 && col ==0){
+                do
+                {
+                    nb_aleatoire=rand()%5;
+                    tab[lig][col]=forme[nb_aleatoire];
+                }while(tab[lig][col] == tab[lig-2][0]);
+            }
+
+            // Élément (1,1)
+            if(lig == 1 && col == 1 ){
+                nb_aleatoire=rand()%5;
+                tab[lig][col]=forme[nb_aleatoire];
+            }
+
+            // Élément (1,2)
+            // Empêche que la case soit identique à celle deux colonnes avant sur la même ligne
+            if(lig == 1 && col == 2 ){
+                do
+                {
+                    nb_aleatoire=rand()%5;
+                    tab[lig][col]=forme[nb_aleatoire];
+                }while(tab[lig][col] == tab[1][0]);
+            }
+
+            // Élément (2,1)
+            // Empêche que la case soit identique à celle deux lignes avant dans la même colonne
+            if(lig == 2 && col == 1){
+                do
+                {
+                    nb_aleatoire=rand()%5;
+                    tab[lig][col]=forme[nb_aleatoire];
+                }while(tab[lig][col] == tab[0][1]);
+            }
+
+            // --- Ligne 1 à partir de la colonne 2 ---
+            // Empêche répétition tous les deux symboles sur la même ligne
+            if( lig ==1 && col >= 2 ){
+                do
+                {
+                    nb_aleatoire=rand()%5;
+                    tab[lig][col]=forme[nb_aleatoire];
+                }while(tab[lig][col]== tab[1][col-2]);
+            }
+
+            // --- Colonne 1 à partir de la ligne 2 ---
+            // Empêche répétition tous les deux symboles dans la même colonne
+            if(lig >= 2 && col ==1){
+                do
+                {
+                    nb_aleatoire=rand()%5;
+                    tab[lig][col]=forme[nb_aleatoire];
+                }while(tab[lig][col] == tab[lig-2][1]);
+            }
+
+            // --- Création du reste du tableau ---
+            // Empêche qu’un symbole soit identique à celui situé 2 cases avant sur la même ligne
+            // ou 2 cases avant sur la même colonne
+            if(lig>=2 && col>=2){
+                do
+                {
+                    nb_aleatoire=rand()%5;
+                    tab[lig][col]=forme[nb_aleatoire];
+                }while(tab[lig][col] == tab[lig][col-2] || tab[lig][col] == tab[lig-2][col]);
+            }
+
+            // === Affichage coloré des symboles ===
+            if(tab[lig][col]=='S') // Soleil
+            {
+                Color(14,0); // Jaune
+                printf("%c", tab[lig][col]);
+            }
+            else if(tab[lig][col]=='F') // Fraise
+            {
+                Color(12,0); // Rouge
+                printf("%c", tab[lig][col]);
+            }
+            else if(tab[lig][col]=='P') // Pomme
+            {
+                Color(6,0); // Vert kaki
+                printf("%c", tab[lig][col]);
+            }
+            else if(tab[lig][col]=='O') // Oignon
+            {
+                Color(5,0); // Violet
+                printf("%c", tab[lig][col]);
+            }
+            else if(tab[lig][col]=='M') // Mandarine
+            {
+                Color(9,0); // Bleu
+                printf("%c", tab[lig][col]);
+            }
+
+
+        }
+
+
+        printf("\n"); // Retour à la ligne après chaque ligne du tableau
+
+
+    }
+
+    // === Boucle principale pour le curseur ===
+    int curseurL = 0, curseurC = 0;
+    char c;
+
+    system("cls"); //efface tout le tableau pour assurer de commencer a la position 0 0
+
+    afficherTableau(tab, curseurL, curseurC);
+
+    printf("\nUtilise ZQSD pour te déplacer, barre espace pour quitter.\n");
+
+    while(1) { //Boucle infini tant que c'est vrai (le 1)
+        c = _getch(); // lecture du clavier
+
+        if(c == 'e') break; // Quitter la boucle infie avec le break
+        if(c == ' ') ;
+        if(c == 'z' && curseurL > 0) curseurL--;      // Haut si on est pas déjà tout en haut
+        if(c == 's' && curseurL < LIG-1) curseurL++; // Bas si on est pas déjà tout en bas
+        if(c == 'q' && curseurC > 0) curseurC--;     // Gauche si on est pas déjà tout en gauche
+        if(c == 'd' && curseurC < COL-1) curseurC++; // Droite si on est pas déjà tout en droite
+
+        system("cls"); //efface tout le tableau
+        afficherTableau(tab, curseurL, curseurC);// le réaffiche avec la nvl positin du cursseur et la met en surbrillance
+    }
+
+    gotoligcol(26, 46);
+    return 0;
+
+
+
+}

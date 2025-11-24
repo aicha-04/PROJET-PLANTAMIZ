@@ -1,0 +1,17 @@
+# depslib dependency file v1.0
+1763995605 source:c:\users\dylan\desktop\ece\algo\projet cours\main.c
+	"fonction.h"
+
+1763996296 source:c:\users\dylan\desktop\ece\algo\projet cours\fonction.c
+	"fonction.h"
+
+1763995989 c:\users\dylan\desktop\ece\algo\projet cours\fonction.h
+	"marcos.h"
+
+1763991934 c:\users\dylan\desktop\ece\algo\projet cours\marcos.h
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<windows.h>
+	<conio.h>
+

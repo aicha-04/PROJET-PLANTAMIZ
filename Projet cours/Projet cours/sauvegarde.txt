@@ -1,0 +1,26 @@
+3 40
+S P F O P F O P P M F P S S F M M O S P F S P F S S P F S O F P M M S P M M P O M M S S M 
+S M M M M O S F O P S M O P F S P O S P O S P O F M P S S F F P M S F F P M O F M P P M F 
+P F F P S O F S S O O S P O S P P S O O S P O O P P O O P S O O P S O O P S O P S S P O O 
+O S P O S S P O S S O O S S P O O P P O S P O S P P O O P S S O P P S S O P P S S O O P P 
+S O P P O S P O O P P O O P P S S P P S S S P P S S P P S S P P S S P P S S P S S P S S P 
+S P S S P P S S P P S S P P S S P S S P P S S P S S P P S S P P S S P P S S S P P S S S S 
+P S S S P P S S P S S P P S S P P S S P P S S S P P S S P P S S P P S S P P S S P S S P S 
+P S S P S S P P S S P P S S P P S S P S S P P S S P S S P P S S P P S S P P S S S P P S S 
+S P P S S S P P S S P S S P P S S P P S S P P S S S P P S S P P S S P P S S P P S S P S S 
+S P P S S P S S P P S S P P S S P P S S P S S P P S S P S S P P S S P P S S P P S S S P P 
+P S S P P S S S P P S S P S S P P S S P P S S P P S S S P P S S P P S S P P S S P P S S P 
+P S S P P S S P S S P P S S P P S S P P S S P S S P P S S P S S P P S S P P S S P P S S S 
+S P P S S P P S S S P P S S P S S P P S S P P S S P P S S S P P S S P P S S P P S S P P S 
+S P P S S P P S S P S S P P S S P P S S P P S S P S S P P S S P S S P P S S P P S S P P S 
+P S S P P S S P P S S S P P S S P S S P P S S P P S S P P S S S P P S S P P S S P P S S P 
+P S S P P S S P P S S P S S P P S S P P S S P P S S P S S P P S S P S S P P S S P P S S P 
+S P P S S P P S S P P S S S P P S S P S S P P S S P P S S P P S S S P P S S P P S S P P S 
+S P P S S P P S S P P S S P S S P P S S P P S S P P S S P S S P P S S P S S P P S S P P S 
+P S S P P S S P P S S P P S S S P P S S P S S P P S S P P S S P P S S S P P S S P P S S P 
+P S S P P S S P P S S P P S S P S S P P S S P P S S P P S S P S S P P S S P S S P P S S P 
+S P P S S P P S S P P S S P P S S S P P S S P S S P P S S P P S S P P S S S P P S S P P S 
+S P P S S P P S S P P S S P P S S P S S P P S S P P S S P P S S P S S P P S S P S S P P S 
+P S S P P S S P P S S P P S S P P S S S P P S S P S S P P S S P P S S P P S S S P P S S P 
+P S S P P S S P P S S P P S S P P S S P S S P P S S P P S S P P S S P S S P P S S P S S P 
+S P P S S P P S S P P S S P P S S P P S S S P P S S P S S P P S S P P S S P P S S S P P S 

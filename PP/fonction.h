@@ -20,6 +20,7 @@
 void Color(int couleurDuTexte,int couleurDeFond);
 void gotoligcol(int lig,int col);
 void afficherTableau(char tab[LIG][COL], int curseurL, int curseurC);
+void verifierTimer(time_t debutPartie, int tempsLimite, int *finPartie);
 void afficherCase(char tab[LIG][COL], int lig,int col,int surligner,int selection);
 void appliquerGravite(char tab[LIG][COL]);
 void analyserEtEliminer(char tab[LIG][COL], int *score, int compteurElim[5], int quotas[5], int *finPartie);
@@ -28,4 +29,5 @@ int sauvegarderPartie(char tab[LIG][COL], int maxCoups, int compteurMouvements, 
 int chargerPartie(char tab[LIG][COL], int *compteurMouvements, int *maxCoups, int *curseurL, int *curseurC, int *score);
 void boucleDeplacement(char tab[LIG][COL], int *curseurL, int *curseurC,
                        int *compteurMouvements, int maxCoups, int *score,
-                       int *finPartie, int compteurElim[5], int quotas[5]);
+                       int *finPartie, int compteurElim[5], int quotas[5],
+                       time_t debutPartie, int tempsLimite);

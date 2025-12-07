@@ -1,0 +1,28 @@
+1 1 25 11 13 3
+0 3 0 0 0 
+236
+S S P O S F F S P O S P F M S M M P P O S M M S O M P P S O P P S M M P O M F F O S P M S 
+F F S P M F P S S M F F P F S S M F P P S F F S S P F M O F F S P P M M O F M O O F M O O 
+F M M F O S M M F F P S M S P F F O S M O S S P F S M F O S F O P P O M F P P O M P O F P 
+P P O O F M O P P O S P F O P M F P M F O O S M P S M F P S S O M M P S F P P S M O P M F 
+S O O S P O F S P P S M O O M P O S M F P O O M S O F S M M O S S M F P M M S S P O S S M 
+S S P P S S M M F S O O P P O S P O O M P P O S F M S S O O F S P F O O M F S M P P O O S 
+O M F O M S S P M S O P P F S F P P S S F M S F P M S O O P M M O F S S F O P F O P P F O 
+F M M O O P P F S O M M F O P P O M F S S M M F O P F M S P P F M M F F O M M S O F M M F 
+M F O M F F O O S M P O S P O O S F F O S F M S F O P P S M F F P S O O S F F S M F S O F 
+P P F F S M O O M F P O S M F M M S P M M S P P F F P O M M F P S O O S S F F M P S O F M 
+O P S O M P S F M P F F O S P F F S M P F O O P P S S F P S O P F F M S F P M F F O P M M 
+S O M S P F S S P P S M O P O P F M M S P P S F O P F F P S S M O P M M P O S S M F P S S 
+F O P S O O F S O M P P M P F M S O O F P M F S O F F M O P P M S S P M O S S P M F S S F 
+F S P F F P M F F O M S O O S M O F P M F F P M S F O P F F P S S O F S O F F P S M O F P 
+M P F O P P S F F O S F F P S F M S F P O F P O M M S F F S O P M F S S P M O F F M O P M 
+P O M P S M F S M F S O P P M F P P O F S P M O P P F S O O S M F S S F F P P F M P P O O 
+P F S M O O P P O F F O P M M P F F O S S M M P O S M O S F M S F M M F O P M M P O S M P 
+M S P M O P S M O O F S O M S P F M P P M M F P S M M F F P P O S M M S O F F M O S M F S 
+S O M P F S O M F P O S M F F M S P M F P P S S P F S P M M S O O F F P P M F F M S F P M 
+P M M O P S O F S M M F F S P F O P F M S P M S P P O S P O M M F O S M P P M O F P P O O 
+M P P F O P S O P M F F S M M F F M P S F M O P S M F S P P M M F P P M S O P M F P O F P 
+S F F S O O F P P F F P M O S M F S O P F M P P S O P P F S P F M M P P O F P M S O O M F 
+P S M P S S P F O S S M P O F M O F F P M S P F F O S F O O P F S O M S O F F O P M M P O 
+P P M F S S O F M S O M P P O S M P P O M F F O M F S O P P F M P P M S P M S O P M F S S 
+O O F F O O F M M O O P M S P P S O M M F F S M O S F O P M F P O M F F P M O F M S O O P 

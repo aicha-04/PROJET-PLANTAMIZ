@@ -1,0 +1,17 @@
+# depslib dependency file v1.0
+1765137025 source:c:\users\dylan\desktop\ppp\main.c
+	"fonction.h"
+
+1765133143 c:\users\dylan\desktop\ppp\fonction.h
+	"macros.h"
+
+1765115273 c:\users\dylan\desktop\ppp\macros.h
+	<stdio.h>
+	<stdlib.h>
+	<time.h>
+	<windows.h>
+	<conio.h>
+
+1765137025 source:c:\users\dylan\desktop\ppp\fonction.c
+	"fonction.h"
+

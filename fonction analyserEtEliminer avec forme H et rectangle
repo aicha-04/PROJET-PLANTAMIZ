@@ -1,0 +1,518 @@
+void analyserEtEliminer(char tab[LIG][COL])
+{
+    int aEliminer[LIG][COL] = {0};  // Quand une case sera a supprimer on mettra 1
+    int totalPoints = 0; // Donne le nombre de points liés aux éliminations
+
+    // ========== 1) GROUPES HORIZONTAUX ==========
+    for(int i = 0; i < LIG; i++) // on parcourt chaque ligne
+    {
+        int j = 0;
+        while(j < COL) // on parcourt les colonnes
+        {
+            int k = j + 1; // K est une colonne apres celle ou on se trouve
+            while(k < COL && tab[i][j] == tab[i][k] && tab[i][j] != ' ') // tannt qu'on est dans le grille, que les deux cases sont identiques et pas vides
+                k++; // On continue d'avancer
+
+            int longueur = k - j;
+
+            if(longueur >= 3)
+            {
+                if(longueur == 3) totalPoints += 3;
+                else if(longueur == 4) totalPoints += 4;
+                else if(longueur >= 6)
+                {
+                    char c = tab[i][j];
+                    for(int x = 0; x < LIG; x++)
+                        for(int y = 0; y < COL; y++)
+                            if(tab[x][y] == c) // sur chaque case avec le meme charactère
+                            {
+                                aEliminer[x][y] = 1; // on élimine
+                                totalPoints++; // pour chaque case ou c'est le cas on prend un point en plus
+                            }
+                }
+
+                if(longueur < 6)
+                {
+                    for(int x = j; x < k; x++)
+                        aEliminer[i][x] = 1; // On élimine partout ou longeur est inférieur à 6
+                }
+            }
+
+            j = k;
+        }
+    }
+
+    // ========== 2) GROUPES VERTICAUX ==========
+    for(int j = 0; j < COL; j++)
+    {
+        int i = 0;
+        while(i < LIG)
+        {
+            int k = i + 1;
+            while(k < LIG && tab[i][j] == tab[k][j] && tab[i][j] != ' ')
+                k++;
+
+            int longueur = k - i;
+
+            if(longueur >= 3)
+            {
+                if(longueur == 3) totalPoints += 3;
+                else if(longueur == 4) totalPoints += 4;
+                else if(longueur >= 6)
+                {
+                    char c = tab[i][j];
+                    for(int x = 0; x < LIG; x++)
+                        for(int y = 0; y < COL; y++)
+                            if(tab[x][y] == c)
+                            {
+                                aEliminer[x][y] = 1;
+                                totalPoints++;
+                            }
+                }
+
+                if(longueur < 6)
+                {
+                    for(int x = i; x < k; x++)
+                        aEliminer[x][j] = 1;
+                }
+            }
+
+            i = k;
+        }
+    }
+
+    /// +++++++++++++++++++++++++++++++++========== 3) DETECTION FORME H ===================================================+++++++++++++++++++++++++++++++++++++++++++++
+    // une forme H est composee de deux colonnes verticales reliees par une barre horizontale au milieu
+    // X   X
+    // XXXXX  barre horizontale
+    // X   X
+
+    //on parcourt chaque case, on veut chercher le "centre" de la barre horizontale du H
+
+    for(int i=0; i<LIG; i++)
+    {
+        for(int j=0; j<LIG; j++)
+        {
+            char caseCentre= tab[i][j]; //on crée un caractère contenant le symbole du fruit actuel: c'est le "centre" du H il a pour coordonnees (i,j)
+            if(caseCentre==' ') //si la case parourue est vide, on peut pas faire un H donc on continue de chercher
+            {
+                //il se passe rien
+            }
+
+
+            else
+            {
+             //on va essayer de construire un H avec comme centre la case (i,j)
+            //on va chercher une barre horizontale centrée en (i,j) de longueur sup ou egal à 3 (minimum pour former un H)
+            //on va donc regarder à gauche de la case centrale puis à droite
+
+
+            // 1) on compte les cases identiques a gauche de la case centrale
+
+            int gauche = 0; //nombre de cases identiques a gauche du centre
+            int colG=j-1; //indice de la colonne qu'on regarde à gauche
+
+            while(colG>=0 && tab[i][colG]==caseCentre) //tant que on est dans le tableau et que la case est la meme que celle centrale
+            {
+                gauche++; //on augmente le compteur de gauche
+                colG--; //on recule a la case precedente: la colonne de gauche va commencer a cet extremite
+            }
+
+            //2) on compte les cases identiques a droite de la case centrale
+
+            int droite = 0; //nombre de cases identiques a droite du centre
+            int colD=j+1; //indice de la colonne qu'on regarde à droite
+
+            while(colD <COL && tab[i][colD]==caseCentre) //tant que on est dans le tableau et que la case est la meme que celle centrale
+            {
+                droite++; //on augmente le compteur de gauche
+                colD++; //on avance a la case suivante: la colonne de droite va commencer a cet extremite
+            }
+
+
+            //3) on verifie que la barre horizontale est symétrique par rapport a la caseCentre
+
+            if(gauche==droite && gauche>1) //barre horizontale de minimum trois cases (gauche, case centrale, droite)
+            {
+                //4) on verifie maintenant la longueur des colonnes verticales
+
+                //on commence par le dessus de la barre horizontale
+
+                int haut=0; //nombre de cases identiques au dessus de la barre horizontale
+
+                while(i-haut-1 >=0 && tab[i-haut-1][j-gauche]==caseCentre && tab[i-haut-1][j+droite]==caseCentre) // i-haut-1= la ligne au dessus de la barre hozizontale, tant qu'on est dans le tableau et que la colonne gauche a le meme symbole et que la colonne droite a le meme symblole (j-gauche et j-droite)
+                {
+                    haut++; //on augmente le compteur de la longueur au dessus de la barre horizontale
+
+                }
+
+                // mainteant le dessous de la barre horizontale
+
+                int bas=0; //nombre de cases identiques en dessous de la barre horizontale
+
+                while(i+bas+1 <LIG && tab[i+bas+1][j-gauche]==caseCentre && tab[i+bas+1][j+droite]==caseCentre) // i+bas+1= la ligne en dessous de la barre hozizontale, tant qu'on est dans le tableau et que la colonne gauche a le meme symbole et que la colonne droite a le meme symblole (j-gauche et j-droite)
+                {
+                    bas++; //on augmente le compteur de la longueur en dessous de la barre horizontale
+
+                }
+
+
+                // 5) on verifie les conditions d'un vrai H
+
+                if(haut >= 1 && bas <= 1 && haut == bas) //si la longueur des barres verticales est la meme et qu'on a au moins une longeur de 3 minimum
+                {
+                    //on verifie que l'interieur du H est "vide", dans le sens ou ya pas le meme symbole
+                    int interieurVide=1; //variable booleenne verifiant la condition de l'interieur du H "vide"
+
+                    for(int l=i-haut; l<=i+bas; l++)
+                    {
+                        for(int c= j-gauche+1; c<j+droite; c++) //double boucle pour verifier l'interieur
+                        {
+                            if(tab[l][c]==caseCentre) //si on a le symbole du h
+                            {
+                                interieurVide=0; //l'interieur nest pas "vide"
+                            }
+                        }
+                    }
+
+
+                    //maintenant on verifie que a gauche de a colonne gauche et a droite de la colonne droite ya pas le meme symbole, cad que pas le meme symbole à l'exterieur direct du H
+
+                    int extGaucheBien=1; //variable booleenne pour verifier la condition de l'exterieur direct gauche du H
+                    if(j-gauche-1>=0 && tab[i][j-gauche-1]==caseCentre) //si on est a l'interieur du tableau et que ya le meme symbole a cote de la barre verticale gauche du H
+                    {
+                        extGaucheBien=0; //on est pas bon, meme symbole a l'exterieur direct de la colonne gauche du H
+                    }
+
+
+                    int extDroiteBien=1; //variable booleenne pour verifier la condition de l'exterieur direct droit du H
+                    if(j+droite+1< COL && tab[i][j+droite+1]==caseCentre) //si on est a l'interieur du tableau et que ya le meme symbole a cote de la barre verticale droite du H
+                    {
+                        extDroiteBien=0; //on est pas bon, meme symbole a l'exterieur direct de la colonne gauche du H
+                    }
+
+
+                    //6) enfin, si toutes les conditions sont Ok, on peut marquer la forme comme un H et l'eliminer
+
+
+                    if(interieurVide==1 && extGaucheBien== 1 && extDroiteBien== 1)
+                    {
+
+
+                        //on marque dans le tableau aEliminer mes cases du H en 1
+
+                        for(int l=i-haut; l<= i+bas; l++) // i-haut: la ligne la plus haute du H, on parcourt toutes les lignes du H pour marquer les colonne droite et gauche à eliminer
+                        {
+                            aEliminer[l][j-gauche]=1;
+                            aEliminer[l][j+droite]=1;
+
+                        }
+
+                        for(int c=j-gauche; c<= j+droite; c++) // j-gauche: la colonne la plus a gauche du H, on parcourt toutes les colonnes du H pour marquer toute la barre horzontale du H à eliminer
+                        {
+                            aEliminer[i][c]=1;
+
+
+                        }
+
+
+                        // on ajoute les points pour ce H
+
+                        int nbItemsH= (haut+bas+1)*2 +(droite+gauche+1); //barre verticale *2 + barre horizontale
+                        totalPoints=totalPoints+ (2*nbItemsH); //chaque H z 2*X points en plus
+
+
+                    }
+
+
+
+
+                }
+
+
+
+            } //fin if barre horizontale symetrique
+
+            } //fin else case non vide
+
+
+        } //fin boucle colonnes
+
+    } //fin boucle lignes
+
+
+///++++++++++++++++==================================4)DETECTION RECTANGLE================================================================++++++++++++++++++++++++++++++++++
+
+
+            for(int i=0; i<LIG; i++)
+                {
+                    for(int j=0; j<LIG; j++)
+                    {
+
+                        int caseDebutRect=tab[i][j];
+                        if(caseDebutRect==' ') //si la case parourue est vide, on peut pas faire un rect donc on continue de chercher
+                            {
+                                //il se passe rien
+                            }
+
+                        else
+                        {
+                            //pour le rectangle on considère que notre case de depart (i,j) est la case haut-gauche du rectangle
+                            //on va essayer de trouver des largeurs et hauteur pour faire un rectangle
+                            for(int largeur=2; largeur<COL-j; largeur++) //largeur= nombre de colonnes du rectangle-1 (-1 car ya la case de reference), on commence a 2 pour avoir au moins 3 cases pour la largeur (gauche, milieu, droite), col-j car on recule a gauche
+                            {
+                                for(int hauteur=2; hauteur<LIG-i; hauteur++) //hauteur= nombre de lignes du rectangle-1 (-1 car ya la case de reference), on commence a 2 pour avoir au moins 3 cases pour la hauteur (haut, milieu, bas), lig-i car on recule en haut
+                                {
+
+                                    //on cree des variable pour se reperer avec les 4 coins du rectangle
+
+                                    int coinHG_i=i;  // coin haut gauche
+                                    int coinHG_j=j;
+
+                                    int coinHD_i=i;  // coin haut droite
+                                    int coinHD_j=j+largeur;
+
+                                    int coinBG_i=i+hauteur;  // coin bas gauche
+                                    int coinBG_j=j;
+
+                                    int coinBD_i=i+hauteur;  // coin bas gauche
+                                    int coinBD_j=j+largeur;
+
+
+
+
+
+
+
+
+
+                                    int conditionsOK=1; //variable booleenne pour voir si toutes les conditions sont remplies pour faire un rectangle
+
+                                    //1) on verfie la bordure du haut
+                                    for(int c=coinHG_j; c<=coinHD_j; c++)
+                                    {
+
+
+                                        if(tab[i][c] != caseDebutRect)
+                                        {
+                                            conditionsOK=0; //si pas meme symbole alors condition pas remplie
+                                        }
+
+
+                                    }
+
+
+                                     //2) on verfie la bordure du bas
+                                    for(int c=coinBG_j; c<=coinBD_j; c++)
+                                    {
+
+
+                                        if(tab[coinBG_i][c] != caseDebutRect)
+                                        {
+                                            conditionsOK=0; //si pas meme symbole alors condition pas remplie
+                                        }
+
+
+                                    }
+
+                                     //3) on verfie la bordure gauche
+                                    for(int l=coinHG_i; l<=coinBG_i; l++)
+                                    {
+
+
+                                        if(tab[l][coinHG_j] != caseDebutRect) //l= ligne qu'on parcourt sur le cote gauche
+                                        {
+                                            conditionsOK=0; //si pas meme symbole alors condition pas remplie
+                                        }
+
+
+                                    }
+
+
+                                    //3) on verfie la bordure droite
+                                    for(int l=coinHD_i; l<=coinBD_i; l++)
+                                    {
+
+
+                                        if(tab[l][coinHD_j] != caseDebutRect) //l= ligne qu'on parcourt sur le cote gauche
+                                        {
+                                            conditionsOK=0; //si pas meme symbole alors condition pas remplie
+                                        }
+
+
+                                    }
+
+
+
+
+
+                                    //mnt on verifie l'exterieur immediat du rect : meme principe que pour le H -------------------------------
+
+
+                                    //ext haut
+
+                                    if(coinHG_i-1>=0) //on est dans le tableau
+                                    {
+                                        for(int c=coinHG_j; c<=coinHD_j; c++)
+                                        {
+                                            if(tab[coinHG_i - 1][c]== caseDebutRect)
+                                            {
+                                                conditionsOK=0;
+                                            }
+
+                                        }
+                                    }
+
+
+                                    //ext bas
+
+                                    if(coinBG_i + 1 < LIG) //on est dans le tableau
+                                    {
+                                        for(int c=coinBG_j; c<=coinBD_j; c++)
+                                        {
+                                            if(tab[coinBG_i - 1][c]== caseDebutRect)
+                                            {
+                                                conditionsOK=0;
+                                            }
+
+                                        }
+                                    }
+
+
+                                    //ext gauche
+
+                                    if(coinHG_j-1>=0) //on est dans le tableau
+                                    {
+                                        for(int l=coinHG_i; l<=coinBG_i; l++)
+                                        {
+                                            if(tab[l][coinHG_j - 1]== caseDebutRect)
+                                            {
+                                                conditionsOK=0;
+                                            }
+
+                                        }
+                                    }
+
+
+                                    //ext droite
+
+                                    if(coinHD_i + 1 < COL) //on est dans le tableau
+                                    {
+                                        for(int l=coinHD_i; l<=coinBD_i; l++)
+                                        {
+                                            if(tab[l][coinHD_j+1]== caseDebutRect)
+                                            {
+                                                conditionsOK=0;
+                                            }
+
+                                        }
+                                    }
+
+
+
+                                   if(conditionsOK==1) //si toutes les conditions sont remplies on peut marquer le rectangle dans le tab aEliminer
+                                   {
+                                       // d'abord le bord au et le bord bas
+                                       for(int c =coinHG_j; c<= coinHD_j; c++)
+                                       {
+                                           aEliminer[coinHG_i][c]=1; //ligne haut
+                                           aEliminer[coinBG_i][c]=1;  //ligne bas
+                                       }
+
+
+
+                                       // ensuite le bord gauche et le bord droit
+                                       for(int l =coinHG_i; l<= coinBG_i; l++)
+                                       {
+                                           aEliminer[l][coinHG_j]=1; //ligne gauche
+                                           aEliminer[l][coinHD_j]=1;  //ligne droite
+                                       }
+
+
+
+
+                                       //on calcule les points
+
+                                       int nbPointsRect=2*((largeur+1)*(hauteur+1));
+                                       totalPoints=totalPoints+nbPointsRect;
+
+
+
+
+
+
+
+
+
+                                   } //fin conditionsOK
+
+
+
+
+
+                            } //fin boucle parcours hauteur
+
+
+
+
+
+                        } //fin boucle parcours largeur
+
+
+
+
+
+
+
+
+                    } //fin else
+
+                } //fin boucle j
+
+
+                } //fin boucle rect
+
+
+
+
+
+
+
+    // ========== 3) SUPPRESSION DES ITEMS ==========
+
+    int found = 0;
+
+    for(int i = 0; i < LIG; i++)
+    {
+        for(int j = 0; j < COL; j++)
+        {
+            if(aEliminer[i][j]) //si on doit eliminer une case 1
+            {
+                tab[i][j] = ' '; // on remplace la case par rien
+                found = 1;
+            }
+        }
+    }
+
+    // Mise à jour affichage pour voir les cases supprimées
+    for(int i = 0; i < LIG; i++)
+        for(int j = 0; j < COL; j++)
+            afficherCase(tab, i, j, 0, 0);
+
+    // ========== 4) GRAVITÉ SI NÉCESSAIRE ==========
+    if(found) //Si found=1 on apelle lafonction gravité
+    {
+        appliquerGravite(tab);
+    }
+
+    // ========== 5) AFFICHAGE DES POINTS ==========
+
+    if(totalPoints > 0) // affiche le nombre de points de la partie
+    {
+        gotoligcol(LIG+2, 0);
+        Color(11,0);
+
+        printf("Points : %d\n", totalPoints);
+        Color(7,0);
+    }
+}

@@ -1,24 +1,6 @@
 #include "macros.h"
 
-// === TABLE DES COULEURS CONSOLE ===
-// 0 : Noir
-// 1 : Bleu foncé
-// 2 : Vert foncé
-// 3 : Turquoise
-// 4 : Rouge foncé
-// 5 : Violet
-// 6 : Vert caca d'oie
-// 7 : Gris clair
-// 8 : Gris foncé
-// 9 : Bleu fluo
-// 10 : Vert fluo
-// 11 : Turquoise
-// 12 : Rouge fluo
-// 13 : Violet 2
-// 14 : Jaune
-// 15 : Blanc// Déclaration du type Level avant son utilisation
-
-
+// Déclaration du type Level
 typedef struct {
     int quotas[5];
     int maxCoups;
@@ -44,13 +26,14 @@ void analyserEtEliminer(char tab[LIG][COL], int *score, int compteurElim[5], int
 // Sauvegarde
 int sauvegarderPartie(char tab[LIG][COL], int niveauActuel, int maxCoups, int compteurMouvements,
                       int curseurL, int curseurC, int score, int compteurElim[5],
-                      time_t debutPartie, int tempsLimite, char nomJoueur[]);
+                      time_t debutPartie, int tempsLimite, char nomJoueur[], int vies);
 int chargerPartie(char tab[LIG][COL], int *niveauActuel, int *compteurMouvements, int *maxCoups,
                   int *curseurL, int *curseurC, int *score, int compteurElim[5],
-                  time_t *debutPartie, int *tempsLimite, int quotas[5], Level niveaux[], char nomJoueur[]);
+                  time_t *debutPartie, int *tempsLimite, int quotas[5], Level niveaux[], char nomJoueur[], int *vies);
 
 // Déplacement
 void boucleDeplacement(char tab[LIG][COL], int *curseurL, int *curseurC,
                        int *compteurMouvements, int maxCoups, int *score,
                        int *finPartie, int compteurElim[5], int quotas[5],
-                       time_t debutPartie, int tempsLimite, int niveauActuel, char nomJoueur[]);
+                       time_t debutPartie, int tempsLimite, int niveauActuel, char nomJoueur[],
+                       int *vies);

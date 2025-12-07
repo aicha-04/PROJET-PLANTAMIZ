@@ -31,3 +31,10 @@ void boucleDeplacement(char tab[LIG][COL], int *curseurL, int *curseurC,
                        int *compteurMouvements, int maxCoups, int *score,
                        int *finPartie, int compteurElim[5], int quotas[5],
                        time_t debutPartie, int tempsLimite);
+
+typedef struct {
+    int quotas[5];
+    int maxCoups;
+    int tempsLimite;
+} Level;
+

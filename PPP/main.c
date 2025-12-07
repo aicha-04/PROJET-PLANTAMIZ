@@ -1,11 +1,4 @@
 #include "fonction.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <string.h>
-#include <conio.h>
-
-//======== MAIN ================================================================================================================
 
 int main() {
     srand(time(NULL));
@@ -22,30 +15,27 @@ int main() {
     int quotas[5] = {0, 0, 0, 0, 0};
     int tempsLimite = 0;
     time_t debutPartie = time(NULL);
+    int vies = 5; // Nombre de vies global
 
-    // ================== SYSTEME DE NIVEAUX ===================
     Level niveaux[] = {
-        { {3, 0, 0, 0, 0}, 30, 300 },   // Niveau 1
-        { {0, 0, 3, 0, 0}, 25, 250 },   // Niveau 2
-        { {0, 3, 0, 0, 0}, 20, 200 }    // Niveau 3
+        { {0, 20, 0, 50, 20}, 40, 300 },
+        { {20, 20, 30, 50, 20}, 45, 300  },
+        { {50, 50, 50, 50, 50}, 35, 300 }
     };
-
     int nbNiveaux = sizeof(niveaux) / sizeof(niveaux[0]);
-    int niveauActuel = 0; // On commence au niveau 1
+    int niveauActuel = 0;
 
-    // ======== Choix de la partie avec sécurité ========
     do {
         printf("Que voulez vous faire :\n");
         printf("ATTENTION, Avant n'oubliez pas de Sauvegarder la partie \n");
         printf("1 - Commencer une nouvelle Partie \n");
         printf("2 - Charger la partie precedente\n");
         scanf("%d", &choix);
-    } while (choix != 1 && choix != 2); // Tant que le joueur n'entre pas 1 ou 2, répéter le menu
+    } while (choix != 1 && choix != 2);
 
     system("cls");
 
     int partieChargee = 0;
-
     if (choix == 1) {
         printf("Veuillez entrer votre prenom : ");
         scanf("%49s", nomJoueur);
@@ -53,63 +43,77 @@ int main() {
 
     if (choix == 2) {
         if (!chargerPartie(tab, &niveauActuel, &compteurMouvements, &maxCoups,
-                  &curseurL, &curseurC, &score, compteurElim, &debutPartie, &tempsLimite, quotas, niveaux, nomJoueur)) {
+                  &curseurL, &curseurC, &score, compteurElim, &debutPartie, &tempsLimite, quotas, niveaux, nomJoueur, &vies)) {
             printf("Impossible de charger la sauvegarde.\n");
             return 0;
         } else {
-            partieChargee = 1; // On sait que la partie a été chargée
+            partieChargee = 1;
         }
     }
 
-    // ================== BOUCLE DES NIVEAUX ===================
     while (niveauActuel < nbNiveaux) {
         if (!partieChargee) {
-            // Réinitialisation pour un nouveau niveau seulement si pas de partie chargée
             memset(tab, 0, sizeof(tab));
-            curseurL = 0;
-            curseurC = 0;
-            compteurMouvements = 0;
-            score = 0;
-            finPartie = 0;
-
-            for (int i = 0; i < 5; i++)
-                compteurElim[i] = 0;
-            for (int i = 0; i < 5; i++)
-                quotas[i] = niveaux[niveauActuel].quotas[i];
-
+            curseurL = 0; curseurC = 0;
+            compteurMouvements = 0; score = 0; finPartie = 0;
+            for(int i = 0; i < 5; i++) compteurElim[i] = 0;
+            for(int i = 0; i < 5; i++) quotas[i] = niveaux[niveauActuel].quotas[i];
             maxCoups = niveaux[niveauActuel].maxCoups;
             tempsLimite = niveaux[niveauActuel].tempsLimite;
             debutPartie = time(NULL);
-        } else {
-            partieChargee = 0; // Une fois utilisé, on passe aux niveaux suivants normalement
-        }
+        } else partieChargee = 0;
 
         system("cls");
         afficherTableau(tab, curseurL, curseurC, nomJoueur);
-
-        // Affichage sous le tableau
-        gotoligcol(LIG+1, 0);
-        printf("Niveau : %d\n", niveauActuel + 1);
+        gotoligcol(LIG+1,0);
+        printf("Niveau : %d | Vies : %d\n", niveauActuel+1, vies);
         printf("ZQSD = se deplacer | ESPACE = echanger | A = sauvegarder | E = quitter");
 
-        // Boucle de jeu
         boucleDeplacement(tab, &curseurL, &curseurC,
                           &compteurMouvements, maxCoups, &score,
                           &finPartie, compteurElim, quotas,
-                          debutPartie, tempsLimite, niveauActuel, nomJoueur);
+                          debutPartie, tempsLimite, niveauActuel, nomJoueur,
+                          &vies);
 
         system("cls");
         gotoligcol(0,0);
 
-        if (finPartie == 1) { // Victoire
+        if (finPartie == 1) {
             printf("Bravo ! Vous avez terminé le niveau %d !\n", niveauActuel + 1);
             niveauActuel++;
-        }
-        else if (finPartie == 2) { // Défaite
-            printf("Dommage, vous avez perdu.\n");
-            break;
-        }
-        else if (finPartie == 3) { // Quitter
+        } else if (finPartie == 2) {
+            vies--;
+            if(vies <= 0) {
+                printf("Vous avez perdu toutes vos vies. Game Over !\n");
+                break;
+            } else {
+                printf("Vous avez perdu une vie ! Vies restantes : %d\n", vies);
+                printf("Voulez-vous : \n1 - Recommencer le niveau\n2 - Quitter le jeu\n");
+                int choixVie;
+                scanf("%d", &choixVie);
+                if(choixVie == 1) {
+                    memset(tab, 0, sizeof(tab));
+                    curseurL = curseurC = compteurMouvements = score = 0;
+                    finPartie = 0;
+                    for(int i=0;i<5;i++) compteurElim[i]=0;
+                    for(int i=0;i<5;i++) quotas[i]=niveaux[niveauActuel].quotas[i];
+                    maxCoups = niveaux[niveauActuel].maxCoups;
+                    tempsLimite = niveaux[niveauActuel].tempsLimite;
+                    debutPartie = time(NULL);
+                    system("cls");
+                    afficherTableau(tab, curseurL, curseurC, nomJoueur);
+                    gotoligcol(LIG+1,0);
+                    printf("Niveau : %d | Vies : %d\n", niveauActuel+1, vies);
+                    printf("ZQSD = se deplacer | ESPACE = echanger | A = sauvegarder | E = quitter");
+                    boucleDeplacement(tab, &curseurL, &curseurC,
+                                      &compteurMouvements, maxCoups, &score,
+                                      &finPartie, compteurElim, quotas,
+                                      debutPartie, tempsLimite, niveauActuel, nomJoueur,
+                                      &vies);
+                    continue;
+                } else break;
+            }
+        } else if (finPartie == 3) {
             system("cls");
             gotoligcol(0,0);
             printf("Vous avez quitte le jeu.\n");

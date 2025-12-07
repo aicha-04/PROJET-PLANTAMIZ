@@ -1,88 +1,45 @@
 #include "fonction.h"
-int compteurMouvements = 0; // Variable compteur 0 de base
+
+//======== Fonctions couleurs et curseur ===========================================================================================
+
 
 void Color(int couleurDuTexte,int couleurDeFond)
 {
-    HANDLE H=GetStdHandle(STD_OUTPUT_HANDLE); // RÈcupËre le handle de la console
-    SetConsoleTextAttribute(H,couleurDeFond*16+couleurDuTexte); // Applique la couleur du texte et du fond
+    HANDLE H=GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(H,couleurDeFond*16+couleurDuTexte);
 }
 
-void gotoligcol( int lig, int col )
+void gotoligcol(int lig, int col)
 {
- COORD mycoord;
- mycoord.X = col; // Position horizontale
- mycoord.Y = lig; // Position verticale
- SetConsoleCursorPosition( GetStdHandle( STD_OUTPUT_HANDLE ), mycoord ); // DÈplace le curseur
+    COORD mycoord;
+    mycoord.X = col;
+    mycoord.Y = lig;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), mycoord);
 }
 
+//======== Affichage tableau =======================================================================================================
 void afficherTableau(char tab[LIG][COL], int curseurL, int curseurC) {
-
     char forme[]="SFPOM";
-    int lig=0;
-    int col=0;
     int nb_aleatoire=0;
 
-    // === CrÈation tableau initial avec valeurs interdites ===
-    for(lig=0; lig<LIG; lig++)
-    {
-        for(col=0; col<COL; col++)
-        {
-            if(lig == 0 && col == 0) { nb_aleatoire=rand()%5; tab[lig][col]=forme[nb_aleatoire]; }
-            if(lig == 0 && col == 1) { nb_aleatoire=rand()%5; tab[lig][col]=forme[nb_aleatoire]; }
-            if(lig == 1 && col == 0) { nb_aleatoire=rand()%5; tab[lig][col]=forme[nb_aleatoire]; }
-
-            if(lig == 0 && col >= 2){
-                do{ nb_aleatoire=rand()%5; tab[lig][col]=forme[nb_aleatoire]; }
-                while(tab[lig][col] == tab[0][col-2]);
-            }
-
-            if(lig >= 2 && col ==0){
-                do{ nb_aleatoire=rand()%5; tab[lig][col]=forme[nb_aleatoire]; }
-                while(tab[lig][col] == tab[lig-2][0]);
-            }
-
-            if(lig == 1 && col == 1) {
-                nb_aleatoire=rand()%5; tab[lig][col]=forme[nb_aleatoire];
-            }
-
-            if(lig == 1 && col == 2) {
-                do{ nb_aleatoire=rand()%5; tab[lig][col]=forme[nb_aleatoire]; }
-                while(tab[lig][col] == tab[1][0]);
-            }
-
-            if(lig == 2 && col == 1) {
-                do{ nb_aleatoire=rand()%5; tab[lig][col]=forme[nb_aleatoire]; }
-                while(tab[lig][col] == tab[0][1]);
-            }
-
-            if(lig ==1 && col >= 2){
-                do{ nb_aleatoire=rand()%5; tab[lig][col]=forme[nb_aleatoire]; }
-                while(tab[lig][col]== tab[1][col-2]);
-            }
-
-            if(lig >= 2 && col ==1){
-                do{ nb_aleatoire=rand()%5; tab[lig][col]=forme[nb_aleatoire]; }
-                while(tab[lig][col] == tab[lig-2][1]);
-            }
-
-            if(lig>=2 && col>=2){
-                do{ nb_aleatoire=rand()%5; tab[lig][col]=forme[nb_aleatoire]; }
-                while(tab[lig][col] == tab[lig][col-2] ||
-                      tab[lig][col] == tab[lig-2][col]);
+    // === Si tab est vide (nouvelle partie) on g√©n√®re, sinon on laisse le tableau tel quel (charg√©) ===
+    if (tab[0][0] == '\0') {
+        for(int lig=0; lig<LIG; lig++) {
+            for(int col=0; col<COL; col++) {
+                // G√©n√©ration al√©atoire avec contraintes
+                do {
+                    nb_aleatoire = rand()%5;
+                    tab[lig][col] = forme[nb_aleatoire];
+                } while((lig>=2 && tab[lig][col]==tab[lig-2][col]) || (col>=2 && tab[lig][col]==tab[lig][col-2]));
             }
         }
     }
 
-
-
-    // === Affichage du tableau ===
-    for(lig = 0; lig < LIG; lig++)
-    {
-        for(col = 0; col < COL; col++)
-        {
+    // Affichage (dans tous les cas)
+    for(int lig = 0; lig < LIG; lig++) {
+        for(int col = 0; col < COL; col++) {
             if(lig == curseurL && col == curseurC)
                 Color(0, 15);
-
             else if(tab[lig][col]=='S') Color(14,0);
             else if(tab[lig][col]=='F') Color(12,0);
             else if(tab[lig][col]=='P') Color(6,0);
@@ -96,86 +53,377 @@ void afficherTableau(char tab[LIG][COL], int curseurL, int curseurC) {
     }
 }
 
+//======== Affichage d‚Äôune case ===========================================================================================
 void afficherCase(char tab[LIG][COL], int lig, int col, int surligner, int selection) {
-    gotoligcol(lig, col); // Se positionne sur la case ‡ afficher
+    gotoligcol(lig, col);
 
-    // Si la case est sÈlectionnÈe
-    if(selection) Color(0, 14); // Fond jaune pour case sÈlectionnÈe
-    else if(surligner) Color(0, 15); // Fond blanc pour le curseur
-    else if(tab[lig][col]=='S') Color(14,0); // Soleil : jaune
-    else if(tab[lig][col]=='F') Color(12,0); // Fraise : rouge
-    else if(tab[lig][col]=='P') Color(6,0);  // Pomme : vert kaki
-    else if(tab[lig][col]=='O') Color(5,0);  // Oignon : violet
-    else if(tab[lig][col]=='M') Color(9,0);  // Mandarine : bleu
+    if(selection) Color(0, 14);
+    else if(surligner) Color(0, 15);
+    else if(tab[lig][col]=='S') Color(14,0);
+    else if(tab[lig][col]=='F') Color(12,0);
+    else if(tab[lig][col]=='P') Color(6,0);
+    else if(tab[lig][col]=='O') Color(5,0);
+    else if(tab[lig][col]=='M') Color(9,0);
 
-    printf("%c", tab[lig][col]); // Affiche le symbole
-    Color(7,0); // RÈinitialise la couleur
+    printf("%c", tab[lig][col]);
+    Color(7,0);
 }
 
-void boucleDeplacement(char tab[LIG][COL])
-{
-    int curseurL = 0, curseurC = 0; // Position actuelle du curseur
-    int enDeplacement = 0;           // Indique si une case a ÈtÈ sÈlectionnÈe pour Èchange
-    int posInitL = -1, posInitC = -1;// Position initiale de la case sÈlectionnÈe
-    char symboleStocke = 0;          // Symbole sÈlectionnÈ pour dÈplacement
+//======== V√©rification fin de partie ===========================================================================================
+void verifierFinPartie(int *compteurMouvements, int maxCoups, int *finPartie) {
+    (*compteurMouvements)++;
+    Color(11,0);
+    gotoligcol(LIG+1,0);
+    printf("Mouvements : %d / %d\n", *compteurMouvements, maxCoups);
+    Color(7,0);
 
-    while (1)
-    {
-        char c = _getch(); // Lecture de la touche pressÈe
-
-        int ancienL = curseurL, ancienC = curseurC; // Sauvegarde de l'ancienne position
-
-        // DÈplacement du curseur avec touches ZQSD
-        if (c == 'z' || c == 'Z') { if (curseurL > 0) curseurL--; } // Monte
-        else if (c == 's' || c == 'S') { if (curseurL < LIG-1) curseurL++; } // Descend
-        else if (c == 'q' || c == 'Q') { if (curseurC > 0) curseurC--; } // Gauche
-        else if (c == 'd' || c == 'D') { if (curseurC < COL-1) curseurC++; } // Droite
-
-        // RÈaffiche uniquement l'ancienne et la nouvelle case
-        afficherCase(tab, ancienL, ancienC, 0, (enDeplacement && ancienL==posInitL && ancienC==posInitC)); // Ancienne case
-        afficherCase(tab, curseurL, curseurC, 1, (enDeplacement && curseurL==posInitL && curseurC==posInitC)); // Nouvelle case en surbrillance
-
-        // SÈlection / Èchange avec la touche espace
-        if (c == ' ') {
-            if (!enDeplacement) {
-                // SÈlection de la case actuelle
-                posInitL = curseurL;
-                posInitC = curseurC;
-                symboleStocke = tab[posInitL][posInitC];
-                enDeplacement = 1; // Active l'Ètat de sÈlection
-                afficherCase(tab, curseurL, curseurC, 0, 1); // Met la case en surbrillance spÈciale sÈlection
-            }
-            else {
-                // VÈrifier que la case ciblÈe est adjacente
-                int distL = abs(curseurL - posInitL);
-                int distC = abs(curseurC - posInitC);
-
-                if ((distL + distC) == 1) { // Adjacent si distance Manhattan = 1
-                    // …CHANGE des symboles
-                    char tmp = tab[curseurL][curseurC];
-                    tab[curseurL][curseurC] = symboleStocke;
-                    tab[posInitL][posInitC] = tmp;
-                    compteurMouvement();
-
-                    // Redessine les deux cases aprËs Èchange
-                    afficherCase(tab, curseurL, curseurC, 1, 0);
-                    afficherCase(tab, posInitL, posInitC, 0, 0);
-                }
-
-                enDeplacement = 0; // RÈinitialise l'Ètat de sÈlection
-            }
-        }
-
-        // Quitter : touche 'e'
-        else if (c == 'e' || c == 'E') break;
+    if(*compteurMouvements >= maxCoups) {
+        *finPartie = 1;
+        Color(12,0);
+        system("cls");
+        gotoligcol(LIG+2,0);
+        printf("FIN DE PARTIE !\n");
+        Color(7,0);
+        gotoligcol(LIG+3,0);
+        printf("Appuyez sur une touche pour continuer...");
+        _getch();
     }
 }
 
-void compteurMouvement()
+//======== Gravit√© ==============================================================================================================
+void appliquerGravite(char tab[LIG][COL])
 {
-    compteurMouvements++;      // IncrÈmente
-    Color(11,0);               // Couleur bleu clair (modifiable)
-    gotoligcol(LIG+1, 0); // Place ÈlÈments ‡ la fin du tableau
-    printf("Movement : %d\n", compteurMouvements); // Affiche
-    Color(7,0);                // Reset couleur
+    for(int col = 0; col < COL; col++)    //On va de colonne en collonne
+    {
+        for(int lig = LIG-1; lig >= 0; lig--)   // sur chaque colonne on prend une ligne en commencant par la derni√®re
+        {
+            if(tab[lig][col] == ' ')  // si on a une case vide
+            {
+                int k = lig - 1;     //k=num√©ro de la ligne d'avant l√† ou on a la case vide
+                // Cherche un item au-dessus
+                while(k >= 0 && tab[k][col] == ' ')  // il d√©crement k jusqu'a ce qu'il trouve la premi√®re case non vide
+                    k--;
+
+                if(k >= 0)
+                {
+                    tab[lig][col] = tab[k][col]; // on fait tomber la case d'avant
+                    tab[k][col] = ' ';           // nouvelle case vide
+                }
+                else   // Si on a rien au dessus
+                {
+                    // plus rien au-dessus ‚Üí on r√©g√©n√®re un item al√©atoire
+                    char forme[] = "SFPOM";
+                    tab[lig][col] = forme[rand() % 5];
+                }
+            }
+        }
+    }
+
+    // R√©affichage du tableau entier apr√®s gravit√©
+    for(int i = 0; i < LIG; i++)
+        for(int j = 0; j < COL; j++)
+            afficherCase(tab, i, j, 0, 0);
+}
+
+void mettreAJourCompteurElimination(char tab[LIG][COL], int aEliminer[LIG][COL], int compteurElim[5], int quotas[5]) {
+    char symbols[] = "SFPOM";
+
+    for(int i = 0; i < LIG; i++) {
+        for(int j = 0; j < COL; j++) {
+            if(aEliminer[i][j]) {
+                for(int k = 0; k < 5; k++) {
+                    if(tab[i][j] == symbols[k]) {
+                        compteurElim[k]++;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    // Affichage √† c√¥t√© du tableau
+    gotoligcol(0, COL + 2);  // D√©calage sur la droite
+    printf("Eliminations / Quotas :\n");
+    for(int k = 0; k < 5; k++) {
+        gotoligcol(k + 1, COL + 2);
+        printf("%c : %d / %d  ", symbols[k], compteurElim[k], quotas[k]);
+    }
+}
+
+int verifierVictoire(int compteurElim[5], int quotas[5]) {
+    for(int k = 0; k < 5; k++) {
+        if(quotas[k] > 0 && compteurElim[k] < quotas[k])
+            return 0; // Quota non atteint
+    }
+    return 1; // Tous les quotas atteints
+}
+
+
+void verifierTimer(time_t debutPartie, int tempsLimite, int *finPartie)
+{
+    if(*finPartie) return;
+
+    time_t maintenant = time(NULL);
+    int tempsEcoule = (int)(maintenant - debutPartie);
+    int tempsRestant = tempsLimite - tempsEcoule;
+
+    Color(11, 0);
+    gotoligcol(LIG+4, 0);
+    printf("Temps restant : %02d secondes   ", tempsRestant);
+    Color(7, 0);
+
+    if(tempsRestant <= 0) {
+        *finPartie = 1;
+
+        Color(12, 0);
+        system("cls");
+        printf("\n\n==== TEMPS √âCOUL√â ====\n");
+        printf("La partie est termin√©e !\n");
+        Color(7, 0);
+
+        printf("\nAppuyez sur une touche pour continuer...");
+        _getch();
+    }
+}
+
+//======== Analyse et √©limination ================================================================================================
+void analyserEtEliminer(char tab[LIG][COL], int *score, int compteurElim[5], int quotas[5], int *finPartie)
+{
+    int aEliminer[LIG][COL] = {0};
+    int totalPoints = 0;
+
+    // --- GROUPES HORIZONTAUX ---
+    for(int i = 0; i < LIG; i++) {
+        int j = 0;
+        while(j < COL) {
+            int k = j + 1;
+            while(k < COL && tab[i][j] == tab[i][k] && tab[i][j] != ' ')
+                k++;
+
+            int longueur = k - j;
+            if(longueur >= 3) {
+                totalPoints += longueur;
+                for(int x = j; x < k; x++)
+                    aEliminer[i][x] = 1;
+            }
+            j = k;
+        }
+    }
+
+void verifierTimer(time_t debutPartie, int tempsLimite, int *finPartie)
+{
+    if(*finPartie) return;
+
+    time_t maintenant = time(NULL);
+    int tempsEcoule = (int)(maintenant - debutPartie);
+    int tempsRestant = tempsLimite - tempsEcoule;
+
+    Color(11, 0);
+    gotoligcol(LIG+4, 0);
+    printf("Temps restant : %02d secondes   ", tempsRestant);
+    Color(7, 0);
+
+    if(tempsRestant <= 0) {
+        *finPartie = 1;
+
+        Color(12, 0);
+        system("cls");
+        printf("\n\n==== TEMPS √âCOUL√â ====\n");
+        printf("La partie est termin√©e !\n");
+        Color(7, 0);
+
+        printf("\nAppuyez sur une touche pour continuer...");
+        _getch();
+    }
+}
+
+    // --- GROUPES VERTICAUX ---
+    for(int j = 0; j < COL; j++) {
+        int i = 0;
+        while(i < LIG) {
+            int k = i + 1;
+            while(k < LIG && tab[i][j] == tab[k][j] && tab[i][j] != ' ')
+                k++;
+
+            int longueur = k - i;
+            if(longueur >= 3) {
+                totalPoints += longueur;
+                for(int x = i; x < k; x++)
+                    aEliminer[x][j] = 1;
+            }
+            i = k;
+        }
+    }
+
+    // --- MISE √Ä JOUR COMPTEUR ---
+    mettreAJourCompteurElimination(tab, aEliminer, compteurElim, quotas);
+
+    // --- SUPPRESSION DES ITEMS ---
+    int found = 0;
+    for(int i = 0; i < LIG; i++) {
+        for(int j = 0; j < COL; j++) {
+            if(aEliminer[i][j]) {
+                tab[i][j] = ' ';
+                found = 1;
+            }
+        }
+    }
+
+    // R√©affichage apr√®s suppression
+    for(int i = 0; i < LIG; i++)
+        for(int j = 0; j < COL; j++)
+            afficherCase(tab, i, j, 0, 0);
+
+    // --- GRAVIT√â ---
+    if(found)
+        appliquerGravite(tab);
+
+    // --- POINTS ---
+    if(totalPoints > 0) {
+        *score += totalPoints;
+        gotoligcol(LIG+2, 0);
+        Color(11,0);
+        printf("Points : %d\n", *score);
+        Color(7,0);
+    }
+
+    // --- VERIFICATION VICTOIRE ---
+    if(verifierVictoire(compteurElim, quotas)) {
+        *finPartie = 1;
+        Color(10,0);
+        gotoligcol(LIG + 4, 0);
+        printf("VOUS AVEZ GAGNE !\n");
+        Color(7,0);
+    }
+}
+
+//======== Sauvegarde ================================================================================================
+int sauvegarderPartie(char tab[LIG][COL], int maxCoups, int compteurMouvements, int curseurL, int curseurC, int score) {
+    FILE *f = fopen("sauvegarde.txt","w");
+    if(!f){printf("Impossible de sauvegarder.\n"); return 0;}
+
+    // Sauvegarde du compteur et maxCoups
+    fprintf(f,"%d %d %d %d %d\n", compteurMouvements, maxCoups, curseurL, curseurC, score);
+
+    for(int i=0;i<LIG;i++){
+        for(int j=0;j<COL;j++) fprintf(f,"%c ",tab[i][j]);
+        fprintf(f,"\n");
+    }
+
+    fclose(f);
+
+    gotoligcol(LIG+2, 0);
+    printf("Sauvegarde r√©ussie !\n");
+    return 1;
+}
+
+//======== Chargement ================================================================================================
+int chargerPartie(char tab[LIG][COL], int *compteurMouvements, int *maxCoups,int *curseurL, int *curseurC, int *score)
+{
+    FILE *f = fopen("sauvegarde.txt","r");
+    if(!f) return 0;
+
+    // Lecture des 5 valeurs sauvegard√©es
+    fscanf(f,"%d %d %d %d %d",
+           compteurMouvements,
+           maxCoups,
+           curseurL,
+           curseurC,
+           score);
+
+    // Lecture du tableau
+    for(int i = 0; i < LIG; i++)
+        for(int j = 0; j < COL; j++)
+            fscanf(f, " %c", &tab[i][j]); // espace avant %c pour ignorer les retours √† la ligne
+
+    fclose(f);
+    return 1;
+}
+
+//======== Boucle d√©placement ================================================================================================
+void boucleDeplacement(char tab[LIG][COL], int *curseurL, int *curseurC,
+                       int *compteurMouvements, int maxCoups, int *score,
+                       int *finPartie, int compteurElim[5], int quotas[5],
+                       time_t debutPartie, int tempsLimite)
+ {
+    int enDeplacement = 0, posInitL = -1, posInitC = -1;
+    char symboleStocke = 0;
+
+    while(1) {
+        if(*finPartie) break;
+
+        char c = _getch();
+        int ancienL = *curseurL, ancienC = *curseurC;
+
+        verifierTimer(debutPartie, tempsLimite, finPartie);
+        if(*finPartie) break;
+
+
+        // --- D√©placement du curseur ---
+        if(c=='z'||c=='Z'){ if(*curseurL>0) (*curseurL)--; }
+        else if(c=='s'||c=='S'){ if(*curseurL<LIG-1) (*curseurL)++; }
+        else if(c=='q'||c=='Q'){ if(*curseurC>0) (*curseurC)--; }
+        else if(c=='d'||c=='D'){ if(*curseurC<COL-1) (*curseurC)++; }
+
+        // --- R√©affichage cases ---
+        afficherCase(tab, ancienL, ancienC, 0, (enDeplacement && ancienL==posInitL && ancienC==posInitC));
+        afficherCase(tab, *curseurL, *curseurC, 1, (enDeplacement && *curseurL==posInitL && *curseurC==posInitC));
+
+        // --- S√©lection / √©change ---
+        if(c==' ') {
+            if(!enDeplacement) {
+                // Stockage de la case initiale
+                posInitL = *curseurL;
+                posInitC = *curseurC;
+                symboleStocke = tab[posInitL][posInitC];
+                enDeplacement = 1;
+                afficherCase(tab, *curseurL, *curseurC, 0, 1);
+            } else {
+                // V√©rification adjacency
+                int distL = abs(*curseurL - posInitL);
+                int distC = abs(*curseurC - posInitC);
+                if((distL + distC) == 1) {
+                    // √âchange
+                    char tmp = tab[*curseurL][*curseurC];
+                    tab[*curseurL][*curseurC] = symboleStocke;
+                    tab[posInitL][posInitC] = tmp;
+
+                    // Mise √† jour mouvements
+                    (*compteurMouvements)++;
+                    gotoligcol(LIG+1,0);
+                    Color(11,0);
+                    printf("Mouvements : %d / %d  ", *compteurMouvements, maxCoups);
+                    Color(7,0);
+
+                    if(*compteurMouvements >= maxCoups) {
+                        *finPartie = 1;
+                        Color(12,0);
+                        gotoligcol(LIG+2,0);
+                        printf("FIN DE PARTIE !\n");
+                        Color(7,0);
+                        gotoligcol(LIG+3,0);
+                        printf("Appuyez sur une touche pour continuer...");
+                        _getch();
+                        break;
+                    }
+
+                    // R√©affichage apr√®s √©change
+                    afficherCase(tab, *curseurL, *curseurC, 1, 0);
+                    afficherCase(tab, posInitL, posInitC, 0, 0);
+
+                    // Analyse et √©limination avec compteur et quotas
+                    analyserEtEliminer(tab, score, compteurElim, quotas, finPartie);
+
+                    afficherCase(tab, *curseurL, *curseurC, 1, 0);
+                }
+                enDeplacement = 0;
+            }
+        }
+
+        // --- Sauvegarde / quitter ---
+        if(c=='a'||c=='A')
+            sauvegarderPartie(tab, maxCoups, *compteurMouvements, *curseurL, *curseurC, *score);
+        else if(c=='e'||c=='E')
+            break;
+    }
 }

@@ -1,379 +1,131 @@
 #include "fonction.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <conio.h>
-#include <windows.h>
-#include <time.h>
 
-//======== Fonctions couleurs et curseur ===================================================================
-void Color(int couleurDuTexte,int couleurDeFond) {
-    HANDLE H=GetStdHandle(STD_OUTPUT_HANDLE);
-    SetConsoleTextAttribute(H,couleurDeFond*16+couleurDuTexte);
-}
+int main() {
+    srand(time(NULL));
 
-void gotoligcol(int lig, int col) {
-    COORD mycoord;
-    mycoord.X = col;
-    mycoord.Y = lig;
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), mycoord);
-}
+    char tab[LIG][COL] = {0};
+    char nomJoueur[50] = "";
+    int choix;
+    int compteurMouvements = 0;
+    int maxCoups = 0;
+    int score = 0;
+    int finPartie = 0;
+    int curseurL = 0, curseurC = 0;
+    int compteurElim[5] = {0};
+    int quotas[5] = {0, 0, 0, 0, 0};
+    int tempsLimite = 0;
+    time_t debutPartie = time(NULL);
+    int vies = 5; // Nombre de vies global
 
-//======== Affichage tableau ================================================================================
-void afficherTableau(char tab[LIG][COL], int curseurL, int curseurC, char nomJoueur[]) {
-    char forme[]="SFPOM";
-    int nb_aleatoire=0;
+    Level niveaux[] = {
+        { {0, 20, 0, 50, 20}, 40, 300 },
+        { {20, 20, 30, 50, 20}, 45, 300  },
+        { {50, 50, 50, 50, 50}, 35, 300 }
+    };
+    int nbNiveaux = sizeof(niveaux) / sizeof(niveaux[0]);
+    int niveauActuel = 0;
 
-    if(tab[0][0] == '\0') {
-        for(int lig=0; lig<LIG; lig++) {
-            for(int col=0; col<COL; col++) {
-                do {
-                    nb_aleatoire = rand()%5;
-                    tab[lig][col] = forme[nb_aleatoire];
-                } while((lig>=2 && tab[lig][col]==tab[lig-2][col]) || (col>=2 && tab[lig][col]==tab[lig][col-2]));
-            }
-        }
+    do {
+        printf("Que voulez vous faire :\n");
+        printf("ATTENTION, Avant n'oubliez pas de Sauvegarder la partie \n");
+        printf("1 - Commencer une nouvelle Partie \n");
+        printf("2 - Charger la partie precedente\n");
+        scanf("%d", &choix);
+    } while (choix != 1 && choix != 2);
+
+    system("cls");
+
+    int partieChargee = 0;
+    if (choix == 1) {
+        printf("Veuillez entrer votre prenom : ");
+        scanf("%49s", nomJoueur);
     }
 
-    for(int lig = 0; lig < LIG; lig++) {
-        for(int col = 0; col < COL; col++) {
-            if(lig == curseurL && col == curseurC)
-                Color(0, 15);
-            else if(tab[lig][col]=='S') Color(14,0);
-            else if(tab[lig][col]=='F') Color(12,0);
-            else if(tab[lig][col]=='P') Color(6,0);
-            else if(tab[lig][col]=='O') Color(5,0);
-            else if(tab[lig][col]=='M') Color(9,0);
-
-            printf("%c", tab[lig][col]);
-            Color(7,0);
-        }
-        printf("\n");
-    }
-
-    gotoligcol(0, COL + 2);
-    printf("Partie de %s", nomJoueur);
-}
-
-//======== Affichage d’une case ===========================================================================
-void afficherCase(char tab[LIG][COL], int lig, int col, int surligner, int selection) {
-    gotoligcol(lig, col);
-
-    if(selection) Color(0, 14);
-    else if(surligner) Color(0, 15);
-    else if(tab[lig][col]=='S') Color(14,0);
-    else if(tab[lig][col]=='F') Color(12,0);
-    else if(tab[lig][col]=='P') Color(6,0);
-    else if(tab[lig][col]=='O') Color(5,0);
-    else if(tab[lig][col]=='M') Color(9,0);
-
-    printf("%c", tab[lig][col]);
-    Color(7,0);
-}
-
-//======== Gravité ===========================================================================================
-void appliquerGravite(char tab[LIG][COL]) {
-    for(int col = 0; col < COL; col++) {
-        for(int lig = LIG-1; lig >= 0; lig--) {
-            if(tab[lig][col] == ' ') {
-                int k = lig - 1;
-                while(k >= 0 && tab[k][col] == ' ')
-                    k--;
-                if(k >= 0) {
-                    tab[lig][col] = tab[k][col];
-                    tab[k][col] = ' ';
-                } else {
-                    char forme[] = "SFPOM";
-                    tab[lig][col] = forme[rand() % 5];
-                }
-            }
-        }
-    }
-
-    for(int i = 0; i < LIG; i++)
-        for(int j = 0; j < COL; j++)
-            afficherCase(tab, i, j, 0, 0);
-}
-
-//======== Compteurs et quotas ===============================================================================
-void mettreAJourCompteurElimination(char tab[LIG][COL], int aEliminer[LIG][COL], int compteurElim[5], int quotas[5], char nomJoueur[]) {
-    char symbols[] = "SFPOM";
-
-    for(int i = 0; i < LIG; i++) {
-        for(int j = 0; j < COL; j++) {
-            if(aEliminer[i][j]) {
-                for(int k = 0; k < 5; k++) {
-                    if(tab[i][j] == symbols[k]) {
-                        compteurElim[k]++;
-                        break;
-                    }
-                }
-            }
-        }
-    }
-
-    Color(10, 0);
-    gotoligcol(0, COL + 2);
-    printf("Partie de %s\n", nomJoueur);
-    gotoligcol(1, COL + 2);
-    printf("Eliminations / Quotas :\n");
-    for(int k = 0; k < 5; k++) {
-        gotoligcol(k + 2, COL + 2);
-        printf("%c : %d / %d  ", symbols[k], compteurElim[k], quotas[k]);
-    }
-}
-
-//======== Victoire ===========================================================================================
-int verifierVictoire(int compteurElim[5], int quotas[5]) {
-    for(int k = 0; k < 5; k++) {
-        if(quotas[k] > 0 && compteurElim[k] < quotas[k])
+    if (choix == 2) {
+        if (!chargerPartie(tab, &niveauActuel, &compteurMouvements, &maxCoups,
+                  &curseurL, &curseurC, &score, compteurElim, &debutPartie, &tempsLimite, quotas, niveaux, nomJoueur, &vies)) {
+            printf("Impossible de charger la sauvegarde.\n");
             return 0;
+        } else {
+            partieChargee = 1;
+        }
     }
-    return 1;
-}
 
-//======== Timer ==============================================================================================
-void verifierTimer(time_t debutPartie, int tempsLimite, int *finPartie) {
-    if(*finPartie) return;
+    while (niveauActuel < nbNiveaux) {
+        if (!partieChargee) {
+            memset(tab, 0, sizeof(tab));
+            curseurL = 0; curseurC = 0;
+            compteurMouvements = 0; score = 0; finPartie = 0;
+            for(int i = 0; i < 5; i++) compteurElim[i] = 0;
+            for(int i = 0; i < 5; i++) quotas[i] = niveaux[niveauActuel].quotas[i];
+            maxCoups = niveaux[niveauActuel].maxCoups;
+            tempsLimite = niveaux[niveauActuel].tempsLimite;
+            debutPartie = time(NULL);
+        } else partieChargee = 0;
 
-    time_t maintenant = time(NULL);
-    int tempsEcoule = (int)(maintenant - debutPartie);
-    int tempsRestant = tempsLimite - tempsEcoule;
-
-    Color(11, 0);
-    gotoligcol(7, COL + 2);
-    printf("Temps restant : %02d secondes   ", tempsRestant);
-    Color(7, 0);
-
-    if(tempsRestant <= 0) {
-        *finPartie = 1;
-        Color(12, 0);
         system("cls");
-        printf("\n\n==== TEMPS ÉCOULÉ ====\n");
-        printf("La partie est terminée !\n");
-        Color(7, 0);
-        _getch();
-        return;
-    }
-}
+        afficherTableau(tab, curseurL, curseurC, nomJoueur);
+        gotoligcol(LIG+1,0);
+        printf("Niveau : %d | Vies : %d\n", niveauActuel+1, vies);
+        printf("ZQSD = se deplacer | ESPACE = echanger | A = sauvegarder | E = quitter");
 
-//======== Analyse et élimination ===============================================================================
-void analyserEtEliminer(char tab[LIG][COL], int *score, int compteurElim[5], int quotas[5], int *finPartie, char nomJoueur[]) {
-    int aEliminer[LIG][COL] = {0};
-    int totalPoints = 0;
+        boucleDeplacement(tab, &curseurL, &curseurC,
+                          &compteurMouvements, maxCoups, &score,
+                          &finPartie, compteurElim, quotas,
+                          debutPartie, tempsLimite, niveauActuel, nomJoueur,
+                          &vies);
 
-    for(int i = 0; i < LIG; i++) {
-        int j = 0;
-        while(j < COL) {
-            int k = j + 1;
-            while(k < COL && tab[i][j] == tab[i][k] && tab[i][j] != ' ')
-                k++;
+        system("cls");
+        gotoligcol(0,0);
 
-            int longueur = k - j;
-            if(longueur >= 3) {
-                totalPoints += longueur;
-                for(int x = j; x < k; x++)
-                    aEliminer[i][x] = 1;
-            }
-            j = k;
-        }
-    }
-
-    for(int j = 0; j < COL; j++) {
-        int i = 0;
-        while(i < LIG) {
-            int k = i + 1;
-            while(k < LIG && tab[i][j] == tab[k][j] && tab[i][j] != ' ')
-                k++;
-
-            int longueur = k - i;
-            if(longueur >= 3) {
-                totalPoints += longueur;
-                for(int x = i; x < k; x++)
-                    aEliminer[x][j] = 1;
-            }
-            i = k;
-        }
-    }
-
-    mettreAJourCompteurElimination(tab, aEliminer, compteurElim, quotas, nomJoueur);
-
-    int found = 0;
-    for(int i = 0; i < LIG; i++) {
-        for(int j = 0; j < COL; j++) {
-            if(aEliminer[i][j]) {
-                tab[i][j] = ' ';
-                found = 1;
-            }
-        }
-    }
-
-    for(int i = 0; i < LIG; i++)
-        for(int j = 0; j < COL; j++)
-            afficherCase(tab, i, j, 0, 0);
-
-    if(found)
-        appliquerGravite(tab);
-
-    if(totalPoints > 0) {
-        *score += totalPoints;
-        gotoligcol(9, COL + 2);
-        Color(11,0);
-        printf("Points : %d\n", *score);
-        Color(7,0);
-    }
-
-    if(verifierVictoire(compteurElim, quotas)) {
-        *finPartie = 1;
-        Color(10,0);
-        gotoligcol(LIG + 4, 0);
-        printf("VOUS AVEZ GAGNE !\n");
-        Color(7,0);
-    }
-}
-
-//======== Sauvegarde ===========================================================================================
-int sauvegarderPartie(char tab[LIG][COL], int niveauActuel, int maxCoups, int compteurMouvements,
-                      int curseurL, int curseurC, int score, int compteurElim[5],
-                      time_t debutPartie, int tempsLimite, char nomJoueur[]) {
-    FILE *f = fopen("sauvegarde.txt", "w");
-    if(!f) { printf("Impossible de sauvegarder.\n"); return 0; }
-
-    fprintf(f, "%s\n", nomJoueur);
-    fprintf(f, "%d %d %d %d %d %d\n", niveauActuel, compteurMouvements, maxCoups, curseurL, curseurC, score);
-
-    for(int k=0; k<5; k++)
-        fprintf(f, "%d ", compteurElim[k]);
-    fprintf(f, "\n");
-
-    int tempsRestant = tempsLimite - (int)(time(NULL) - debutPartie);
-    if(tempsRestant < 0) tempsRestant = 0;
-    fprintf(f, "%d\n", tempsRestant);
-
-    for(int i=0; i<LIG; i++){
-        for(int j=0; j<COL; j++)
-            fprintf(f,"%c ", tab[i][j]);
-        fprintf(f,"\n");
-    }
-
-    fclose(f);
-
-    gotoligcol(LIG+2, 0);
-    printf("Sauvegarde réussie !\n");
-    return 1;
-}
-
-//======== Chargement ===========================================================================================
-int chargerPartie(char tab[LIG][COL], int *niveauActuel, int *compteurMouvements, int *maxCoups,
-                  int *curseurL, int *curseurC, int *score, int compteurElim[5],
-                  time_t *debutPartie, int *tempsLimite, int quotas[5], Level niveaux[], char nomJoueur[]) {
-    FILE *f = fopen("sauvegarde.txt","r");
-    if(!f) return 0;
-
-    fscanf(f, "%49s", nomJoueur);
-    fscanf(f,"%d %d %d %d %d %d", niveauActuel, compteurMouvements, maxCoups, curseurL, curseurC, score);
-
-    for(int k=0; k<5; k++)
-        fscanf(f, "%d", &compteurElim[k]);
-
-    int tempsRestant;
-    fscanf(f, "%d", &tempsRestant);
-    if(tempsRestant < 0) tempsRestant = 0;
-
-    *tempsLimite = niveaux[*niveauActuel].tempsLimite;
-    for(int k=0; k<5; k++)
-        quotas[k] = niveaux[*niveauActuel].quotas[k];
-
-    *debutPartie = time(NULL) - (*tempsLimite - tempsRestant);
-
-    for(int i=0; i<LIG; i++)
-        for(int j=0; j<COL; j++)
-            fscanf(f, " %c", &tab[i][j]);
-
-    fclose(f);
-    return 1;
-}
-
-//======== Boucle déplacement =====================================================================================
-void boucleDeplacement(char tab[LIG][COL], int *curseurL, int *curseurC,
-                       int *compteurMouvements, int maxCoups, int *score,
-                       int *finPartie, int compteurElim[5], int quotas[5],
-                       time_t debutPartie, int tempsLimite, int niveauActuel, char nomJoueur[]) {
-    int enDeplacement = 0, posInitL = -1, posInitC = -1;
-    char symboleStocke = 0;
-
-    while(1) {
-        if(*finPartie) break;
-
-        char c = _getch();
-        int ancienL = *curseurL, ancienC = *curseurC;
-
-        verifierTimer(debutPartie, tempsLimite, finPartie);
-        if(*finPartie) break;
-
-        int bougeCurseur = 0;
-
-        if(c=='z'||c=='Z'){ if(*curseurL>0) { (*curseurL)--; bougeCurseur = 1; } }
-        else if(c=='s'||c=='S'){ if(*curseurL<LIG-1) { (*curseurL)++; bougeCurseur = 1; } }
-        else if(c=='q'||c=='Q'){ if(*curseurC>0) { (*curseurC)--; bougeCurseur = 1; } }
-        else if(c=='d'||c=='D'){ if(*curseurC<COL-1) { (*curseurC)++; bougeCurseur = 1; } }
-
-        afficherCase(tab, ancienL, ancienC, 0, (enDeplacement && ancienL==posInitL && ancienC==posInitC));
-        afficherCase(tab, *curseurL, *curseurC, 1, (enDeplacement && *curseurL==posInitL && *curseurC==posInitC));
-
-        if(bougeCurseur && !enDeplacement) {
-            int aEliminer[LIG][COL] = {0};
-            mettreAJourCompteurElimination(tab, aEliminer, compteurElim, quotas, nomJoueur);
-        }
-
-        if(c==' ') {
-            if(!enDeplacement) {
-                posInitL = *curseurL;
-                posInitC = *curseurC;
-                symboleStocke = tab[posInitL][posInitC];
-                enDeplacement = 1;
-                afficherCase(tab, *curseurL, *curseurC, 0, 1);
+        if (finPartie == 1) {
+            printf("Bravo ! Vous avez terminé le niveau %d !\n", niveauActuel + 1);
+            niveauActuel++;
+        } else if (finPartie == 2) {
+            vies--;
+            if(vies <= 0) {
+                printf("Vous avez perdu toutes vos vies. Game Over !\n");
+                break;
             } else {
-                int distL = abs(*curseurL - posInitL);
-                int distC = abs(*curseurC - posInitC);
-                if((distL + distC) == 1) {
-                    char tmp = tab[*curseurL][*curseurC];
-                    tab[*curseurL][*curseurC] = symboleStocke;
-                    tab[posInitL][posInitC] = tmp;
-
-                    (*compteurMouvements)++;
-                    gotoligcol(8, COL + 2);
-                    Color(11,0);
-                    printf("Mouvements : %d / %d  ", *compteurMouvements, maxCoups);
-                    Color(7,0);
-
-                    if(*compteurMouvements >= maxCoups) {
-                        *finPartie = 1;
-                        Color(12,0);
-                        gotoligcol(LIG+2,0);
-                        printf("FIN DE PARTIE !\n");
-                        Color(7,0);
-                        gotoligcol(LIG+3,0);
-                        _getch();
-                        return;
-                    }
-
-                    afficherCase(tab, *curseurL, *curseurC, 1, 0);
-                    afficherCase(tab, posInitL, posInitC, 0, 0);
-
-                    analyserEtEliminer(tab, score, compteurElim, quotas, finPartie, nomJoueur);
-
-                    afficherCase(tab, *curseurL, *curseurC, 1, 0);
-                }
-                enDeplacement = 0;
+                printf("Vous avez perdu une vie ! Vies restantes : %d\n", vies);
+                printf("Voulez-vous : \n1 - Recommencer le niveau\n2 - Quitter le jeu\n");
+                int choixVie;
+                scanf("%d", &choixVie);
+                if(choixVie == 1) {
+                    memset(tab, 0, sizeof(tab));
+                    curseurL = curseurC = compteurMouvements = score = 0;
+                    finPartie = 0;
+                    for(int i=0;i<5;i++) compteurElim[i]=0;
+                    for(int i=0;i<5;i++) quotas[i]=niveaux[niveauActuel].quotas[i];
+                    maxCoups = niveaux[niveauActuel].maxCoups;
+                    tempsLimite = niveaux[niveauActuel].tempsLimite;
+                    debutPartie = time(NULL);
+                    system("cls");
+                    afficherTableau(tab, curseurL, curseurC, nomJoueur);
+                    gotoligcol(LIG+1,0);
+                    printf("Niveau : %d | Vies : %d\n", niveauActuel+1, vies);
+                    printf("ZQSD = se deplacer | ESPACE = echanger | A = sauvegarder | E = quitter");
+                    boucleDeplacement(tab, &curseurL, &curseurC,
+                                      &compteurMouvements, maxCoups, &score,
+                                      &finPartie, compteurElim, quotas,
+                                      debutPartie, tempsLimite, niveauActuel, nomJoueur,
+                                      &vies);
+                    continue;
+                } else break;
             }
-        }
-
-        if(c=='a'||c=='A')
-            sauvegarderPartie(tab, niveauActuel, maxCoups, *compteurMouvements, *curseurL, *curseurC, *score, compteurElim, debutPartie, tempsLimite, nomJoueur);
-        if (c == 'E' || c == 'e') {
-            *finPartie = 3;
-            return;
+        } else if (finPartie == 3) {
+            system("cls");
+            gotoligcol(0,0);
+            printf("Vous avez quitte le jeu.\n");
+            break;
         }
     }
+
+    if (niveauActuel >= nbNiveaux) {
+        system("cls");
+        gotoligcol(0,0);
+        printf("Vous avez complete **TOUS** les niveaux !\n");
+    }
+
+    return 0;
 }

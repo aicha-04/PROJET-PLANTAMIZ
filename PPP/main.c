@@ -1,4 +1,9 @@
 #include "fonction.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
+#include <conio.h>
 
 //======== MAIN ================================================================================================================
 
@@ -6,6 +11,7 @@ int main() {
     srand(time(NULL));
 
     char tab[LIG][COL] = {0};
+    char nomJoueur[50] = "";
     int choix;
     int compteurMouvements = 0;
     int maxCoups = 0;
@@ -27,30 +33,38 @@ int main() {
     int nbNiveaux = sizeof(niveaux) / sizeof(niveaux[0]);
     int niveauActuel = 0; // On commence au niveau 1
 
-    // ======== Choix de la partie ========
-    printf("Que voulez vous faire :\n");
-    printf("ATTENTION, Avant n'oubliez pas de Sauvegarder la partie \n");
-    printf("1 - Commencer une nouvelle Partie \n");
-    printf("2 - Charger la partie precedente\n");
-    scanf("%d", &choix);
+    // ======== Choix de la partie avec s√©curit√© ========
+    do {
+        printf("Que voulez vous faire :\n");
+        printf("ATTENTION, Avant n'oubliez pas de Sauvegarder la partie \n");
+        printf("1 - Commencer une nouvelle Partie \n");
+        printf("2 - Charger la partie precedente\n");
+        scanf("%d", &choix);
+    } while (choix != 1 && choix != 2); // Tant que le joueur n'entre pas 1 ou 2, r√©p√©ter le menu
+
     system("cls");
 
     int partieChargee = 0;
 
+    if (choix == 1) {
+        printf("Veuillez entrer votre prenom : ");
+        scanf("%49s", nomJoueur);
+    }
+
     if (choix == 2) {
         if (!chargerPartie(tab, &niveauActuel, &compteurMouvements, &maxCoups,
-                  &curseurL, &curseurC, &score, compteurElim, &debutPartie, &tempsLimite, quotas, niveaux)) {
+                  &curseurL, &curseurC, &score, compteurElim, &debutPartie, &tempsLimite, quotas, niveaux, nomJoueur)) {
             printf("Impossible de charger la sauvegarde.\n");
             return 0;
         } else {
-            partieChargee = 1; // On sait que la partie a ÈtÈ chargÈe
+            partieChargee = 1; // On sait que la partie a √©t√© charg√©e
         }
     }
 
     // ================== BOUCLE DES NIVEAUX ===================
     while (niveauActuel < nbNiveaux) {
         if (!partieChargee) {
-            // RÈinitialisation pour un nouveau niveau seulement si pas de partie chargÈe
+            // R√©initialisation pour un nouveau niveau seulement si pas de partie charg√©e
             memset(tab, 0, sizeof(tab));
             curseurL = 0;
             curseurC = 0;
@@ -67,12 +81,11 @@ int main() {
             tempsLimite = niveaux[niveauActuel].tempsLimite;
             debutPartie = time(NULL);
         } else {
-            // Partie chargÈe : ne rien rÈinitialiser
-            partieChargee = 0; // Une fois utilisÈ, on passe aux niveaux suivants normalement
+            partieChargee = 0; // Une fois utilis√©, on passe aux niveaux suivants normalement
         }
 
-        system("cls");  // Efface l'Ècran avant chaque niveau
-        afficherTableau(tab, curseurL, curseurC);
+        system("cls");
+        afficherTableau(tab, curseurL, curseurC, nomJoueur);
 
         // Affichage sous le tableau
         gotoligcol(LIG+1, 0);
@@ -83,19 +96,18 @@ int main() {
         boucleDeplacement(tab, &curseurL, &curseurC,
                           &compteurMouvements, maxCoups, &score,
                           &finPartie, compteurElim, quotas,
-                          debutPartie, tempsLimite, niveauActuel);
+                          debutPartie, tempsLimite, niveauActuel, nomJoueur);
 
-        // Clear aprËs la partie, avant díafficher le message
         system("cls");
         gotoligcol(0,0);
 
         if (finPartie == 1) { // Victoire
-            printf("Bravo ! Vous avez terminÈ le niveau %d !\n", niveauActuel + 1);
-            niveauActuel++; // Passage automatique au niveau suivant
+            printf("Bravo ! Vous avez termin√© le niveau %d !\n", niveauActuel + 1);
+            niveauActuel++;
         }
-        else if (finPartie == 2) { // DÈfaite
+        else if (finPartie == 2) { // D√©faite
             printf("Dommage, vous avez perdu.\n");
-            break; // On sort de la boucle si perdu
+            break;
         }
         else if (finPartie == 3) { // Quitter
             system("cls");
@@ -105,7 +117,6 @@ int main() {
         }
     }
 
-    // Message final si tous les niveaux sont complÈtÈs
     if (niveauActuel >= nbNiveaux) {
         system("cls");
         gotoligcol(0,0);

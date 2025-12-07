@@ -49,7 +49,7 @@ void afficherTableau(char tab[LIG][COL], int curseurL, int curseurC) {
     }
 }
 
-//======== Affichage d’une case ===========================================================================================
+//======== Affichage dâ€™une case ===========================================================================================
 void afficherCase(char tab[LIG][COL], int lig, int col, int surligner, int selection) {
     gotoligcol(lig, col);
 
@@ -65,7 +65,7 @@ void afficherCase(char tab[LIG][COL], int lig, int col, int surligner, int selec
     Color(7,0);
 }
 
-//======== Vérification fin de partie ===========================================================================================
+//======== VÃ©rification fin de partie ===========================================================================================
 void verifierFinPartie(int *compteurMouvements, int maxCoups, int *finPartie) {
     (*compteurMouvements)++;
     Color(11,0);
@@ -86,7 +86,7 @@ void verifierFinPartie(int *compteurMouvements, int maxCoups, int *finPartie) {
     }
 }
 
-//======== Gravité ==============================================================================================================
+//======== GravitÃ© ==============================================================================================================
 void appliquerGravite(char tab[LIG][COL])
 {
     for(int col = 0; col < COL; col++)
@@ -168,15 +168,15 @@ void verifierTimer(time_t debutPartie, int tempsLimite, int *finPartie)
 
         Color(12, 0);
         system("cls");
-        printf("\n\n==== TEMPS ÉCOULÉ ====\n");
-        printf("La partie est terminée !\n");
+        printf("\n\n==== TEMPS Ã‰COULÃ‰ ====\n");
+        printf("La partie est terminÃ©e !\n");
         Color(7, 0);
         _getch();
         return;
     }
 }
 
-//======== Analyse et élimination ================================================================================================
+//======== Analyse et Ã©limination ================================================================================================
 void analyserEtEliminer(char tab[LIG][COL], int *score, int compteurElim[5], int quotas[5], int *finPartie)
 {
     int aEliminer[LIG][COL] = {0};
@@ -263,7 +263,7 @@ int sauvegarderPartie(char tab[LIG][COL], int niveauActuel, int maxCoups, int co
     // Sauvegarde des infos principales
     fprintf(f, "%d %d %d %d %d %d\n", niveauActuel, compteurMouvements, maxCoups, curseurL, curseurC, score);
 
-    // Sauvegarde des compteurs d'élimination
+    // Sauvegarde des compteurs d'Ã©limination
     for(int k=0; k<5; k++)
         fprintf(f, "%d ", compteurElim[k]);
     fprintf(f, "\n");
@@ -273,7 +273,7 @@ int sauvegarderPartie(char tab[LIG][COL], int niveauActuel, int maxCoups, int co
     if(tempsRestant < 0) tempsRestant = 0;
     fprintf(f, "%d\n", tempsRestant);
 
-    // Sauvegarde du tableau tel qu'il est à ce moment (cases déjà éliminées = ' ')
+    // Sauvegarde du tableau tel qu'il est Ã  ce moment (cases dÃ©jÃ  Ã©liminÃ©es = ' ')
     for(int i=0; i<LIG; i++){
         for(int j=0; j<COL; j++)
             fprintf(f,"%c ", tab[i][j]);
@@ -283,7 +283,7 @@ int sauvegarderPartie(char tab[LIG][COL], int niveauActuel, int maxCoups, int co
     fclose(f);
 
     gotoligcol(LIG+2, 0);
-    printf("Sauvegarde réussie !\n");
+    printf("Sauvegarde rÃ©ussie !\n");
     return 1;
 }
 
@@ -321,7 +321,7 @@ int chargerPartie(char tab[LIG][COL], int *niveauActuel, int *compteurMouvements
 }
 
 
-//======== Boucle déplacement ================================================================================================
+//======== Boucle dÃ©placement ================================================================================================
 void boucleDeplacement(char tab[LIG][COL], int *curseurL, int *curseurC,
                        int *compteurMouvements, int maxCoups, int *score,
                        int *finPartie, int compteurElim[5], int quotas[5],
@@ -339,14 +339,25 @@ void boucleDeplacement(char tab[LIG][COL], int *curseurL, int *curseurC,
         verifierTimer(debutPartie, tempsLimite, finPartie);
         if(*finPartie) break;
 
-        if(c=='z'||c=='Z'){ if(*curseurL>0) (*curseurL)--; }
-        else if(c=='s'||c=='S'){ if(*curseurL<LIG-1) (*curseurL)++; }
-        else if(c=='q'||c=='Q'){ if(*curseurC>0) (*curseurC)--; }
-        else if(c=='d'||c=='D'){ if(*curseurC<COL-1) (*curseurC)++; }
+        int bougeCurseur = 0; // Indicateur pour savoir si le curseur a bougÃ©
 
+        // DÃ©placements
+        if(c=='z'||c=='Z'){ if(*curseurL>0) { (*curseurL)--; bougeCurseur = 1; } }
+        else if(c=='s'||c=='S'){ if(*curseurL<LIG-1) { (*curseurL)++; bougeCurseur = 1; } }
+        else if(c=='q'||c=='Q'){ if(*curseurC>0) { (*curseurC)--; bougeCurseur = 1; } }
+        else if(c=='d'||c=='D'){ if(*curseurC<COL-1) { (*curseurC)++; bougeCurseur = 1; } }
+
+        // RafraÃ®chir les cases
         afficherCase(tab, ancienL, ancienC, 0, (enDeplacement && ancienL==posInitL && ancienC==posInitC));
         afficherCase(tab, *curseurL, *curseurC, 1, (enDeplacement && *curseurL==posInitL && *curseurC==posInitC));
 
+        // Afficher les quotas seulement si on a bougÃ© le curseur et pas pendant un switch
+        if(bougeCurseur && !enDeplacement) {
+            int aEliminer[LIG][COL] = {0}; // tableau vide, juste pour afficher
+            mettreAJourCompteurElimination(tab, aEliminer, compteurElim, quotas);
+        }
+
+        // Gestion de l'Ã©change
         if(c==' ') {
             if(!enDeplacement) {
                 posInitL = *curseurL;
@@ -377,7 +388,6 @@ void boucleDeplacement(char tab[LIG][COL], int *curseurL, int *curseurC,
                         gotoligcol(LIG+3,0);
                         _getch();
                         return;
-                        break;
                     }
 
                     afficherCase(tab, *curseurL, *curseurC, 1, 0);
@@ -395,8 +405,9 @@ void boucleDeplacement(char tab[LIG][COL], int *curseurL, int *curseurC,
             sauvegarderPartie(tab, niveauActuel, maxCoups, *compteurMouvements, *curseurL, *curseurC, *score, compteurElim, debutPartie, tempsLimite);
         if (c == 'E' || c == 'e') {
             *finPartie = 3; // Signal pour quitter
-        return;
+            return;
         }
 
     }
 }
+
